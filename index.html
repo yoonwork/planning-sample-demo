@@ -1,0 +1,1239 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>예약 취소·환불 정책서</title>
+<meta name="description" content="가상 레슨 예약·매칭 서비스 '가람레슨'의 예약 취소·환불·쿠폰 복원·노쇼 정책을 화면설계서, 기능 명세, 정책표, 예외 시나리오로 정리한 제안용 기획 샘플이에요.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23191F28'/%3E%3Cpath d='M9 11h14M9 16h14M9 21h9' stroke='%23fff' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style id="tokens">
+:root{
+  color-scheme: light;
+  --brand:#C9480B; --brand-hover:#A93A06; --brand-text:#A93A06; --brand-tint:#FFF3EB; --brand-tint-2:#FFDCC7;
+  --bg:#F4F4F1; --card:#FFFFFF; --soft:#F7F8FA; --track:#ECEFF3; --line:#E5E8EB; --line-2:#EBEEF2;
+  --ink:#191F28; --ink-2:#4E5968; --mut:#636D7B; --mut-2:#9AA3AE;
+  --ok:#127A4F; --ok-bg:#E3F6ED; --ok-dot:#1FA971;
+  --warn:#7A5600; --warn-bg:#FFF3D4; --warn-dot:#F2B01E;
+  --bad:#BF2930; --bad-bg:#FFE3E4; --bad-dot:#E5484D;
+  --info:#175CD3; --info-bg:#EAF2FF; --info-dot:#2E7CF6;
+  --neu:#4E5968; --neu-bg:#F0F2F5; --neu-dot:#8B95A1;
+  --font:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,system-ui,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --r-sm:8px; --r-md:12px; --r-lg:20px; --r-xl:28px; --r-pill:999px;
+  --sh-pop:0 2px 6px rgba(16,24,40,.06),0 12px 32px rgba(16,24,40,.12);
+  /* 와이어프레임 회색 */
+  --w-0:#FFFFFF; --w-1:#F5F6F8; --w-2:#E9ECF0; --w-3:#D3D8DE; --w-4:#B9C0C8; --w-ink:#3A424D;
+}
+</style>
+<style>
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.6;word-break:keep-all;overflow-wrap:break-word}
+a{color:var(--brand-text);text-underline-offset:3px}
+a:focus-visible,button:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-radius:6px}
+.num,td.r,.r{font-variant-numeric:tabular-nums}
+code,.code{font-family:var(--mono);font-size:13px;background:var(--neu-bg);padding:1px 6px;border-radius:6px;color:var(--ink-2);white-space:nowrap}
+.wrap{max-width:1200px;margin:0 auto;padding:0 24px}
+
+/* 맨 위 띠 */
+.ribbon{background:var(--ink);color:#fff;font-size:13px;text-align:center;padding:8px 16px}
+.ribbon b{font-weight:600}
+
+/* 문서 머리 */
+.doc-head{padding:40px 0 24px}
+.doc-kind{font-size:13px;color:var(--mut);font-weight:500;margin:0 0 8px}
+.doc-head h1{font-size:32px;line-height:1.25;letter-spacing:-.02em;margin:0 0 12px;font-weight:700}
+.doc-head .lead{font-size:17px;color:var(--ink-2);margin:0;max-width:720px}
+.meta{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin-top:24px;background:var(--card);border:1px solid var(--line-2);border-radius:var(--r-lg);overflow:hidden}
+.meta div{padding:16px 20px;border-right:1px solid var(--line-2)}
+.meta div:last-child{border-right:0}
+.meta dt{font-size:12px;color:var(--mut);font-weight:500;margin:0 0 4px}
+.meta dd{margin:0;font-size:14px;font-weight:600}
+
+.note-figma{display:flex;gap:12px;align-items:flex-start;margin-top:16px;padding:16px 20px;border-radius:var(--r-lg);background:var(--brand-tint);color:var(--ink);font-size:14px}
+.note-figma svg{flex:none;margin-top:2px}
+
+/* 목차 */
+.toc{margin:24px 0 0;background:var(--card);border:1px solid var(--line-2);border-radius:var(--r-lg);padding:20px 24px}
+.toc h2{font-size:13px;color:var(--mut);font-weight:600;margin:0 0 12px}
+.toc ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px 16px}
+.toc a{display:flex;gap:8px;align-items:center;min-height:40px;padding:4px 0;color:var(--ink);text-decoration:none;font-size:14px;font-weight:500}
+.toc a span{color:var(--mut);font-variant-numeric:tabular-nums;width:20px;flex:none}
+.toc a:hover{color:var(--brand-text)}
+
+/* 구역 */
+main{padding-bottom:64px}
+.sec{background:var(--card);border:1px solid var(--line-2);border-radius:var(--r-lg);padding:32px;margin-top:16px;scroll-margin-top:16px}
+.sec>h2{font-size:24px;line-height:1.3;letter-spacing:-.02em;margin:0 0 4px;display:flex;gap:12px;align-items:baseline}
+.sec>h2 .no{color:var(--mut);font-weight:600;font-size:17px;font-variant-numeric:tabular-nums}
+.sec>.sub{color:var(--mut);font-size:14px;margin:0 0 24px}
+.sec h3{font-size:17px;margin:32px 0 8px;line-height:1.4}
+.sec h3:first-of-type{margin-top:8px}
+.sec h3 .id{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--brand-text);background:var(--brand-tint);padding:2px 8px;border-radius:6px;margin-right:8px;vertical-align:2px}
+.sec p{margin:0 0 12px}
+.sec .help{font-size:13px;color:var(--mut);margin:8px 0 0}
+
+/* 표 */
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:var(--r-md);margin:8px 0 0}
+table{border-collapse:collapse;width:100%;font-size:14px;line-height:1.5}
+th,td{padding:12px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+th{background:var(--soft);color:var(--mut);font-size:13px;font-weight:600;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.r,th.r{text-align:right;white-space:nowrap}
+td.id{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--ink-2);white-space:nowrap}
+td.nw{white-space:nowrap}
+td small{display:block;color:var(--mut);font-size:13px}
+.t-wide{min-width:880px}
+.t-mid{min-width:680px}
+.t-xl{min-width:1040px}
+.hl td{background:var(--brand-tint)}
+.scroll-hint{display:none;font-size:12px;color:var(--mut);margin:8px 0 0}
+
+/* 칩 */
+.chip{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:var(--r-pill);font-size:12px;font-weight:600;white-space:nowrap}
+.chip::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.c-ok{color:var(--ok);background:var(--ok-bg)} .c-ok::before{background:var(--ok-dot)}
+.c-warn{color:var(--warn);background:var(--warn-bg)} .c-warn::before{background:var(--warn-dot)}
+.c-bad{color:var(--bad);background:var(--bad-bg)} .c-bad::before{background:var(--bad-dot)}
+.c-info{color:var(--info);background:var(--info-bg)} .c-info::before{background:var(--info-dot)}
+.c-neu{color:var(--neu);background:var(--neu-bg)} .c-neu::before{background:var(--neu-dot)}
+
+/* 범위 */
+.scope{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:16px;margin-top:16px}
+.box{border:1px solid var(--line);border-radius:var(--r-md);padding:20px}
+.box h4{margin:0 0 8px;font-size:15px}
+.box ul{margin:0;padding-left:18px;font-size:14px}
+.box li{margin:4px 0}
+.box.out{background:var(--soft);border-color:var(--line-2)}
+
+/* 판정 순서 */
+.steps{counter-reset:s;list-style:none;margin:8px 0 0;padding:0;display:grid;gap:8px}
+.steps li{counter-increment:s;display:grid;grid-template-columns:32px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 16px;border:1px solid var(--line);border-radius:var(--r-md);font-size:14px}
+.steps li::before{content:"R" counter(s);font-family:var(--mono);font-size:12px;font-weight:700;color:var(--ink-2)}
+.steps li b{font-weight:600}
+.steps li .res{font-size:13px;color:var(--mut);text-align:right}
+
+.calc{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:12px}
+.calc div{border:1px solid var(--line);border-radius:var(--r-md);padding:16px}
+.calc dt{font-size:13px;color:var(--mut);margin-bottom:4px}
+.calc dd{margin:0;font-size:14px}
+.calc .big{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
+
+/* 다이어그램 */
+.diagram{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:var(--r-md);background:#FCFCFB;margin-top:8px}
+.diagram svg{display:block;width:100%;min-width:920px;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:8px 20px;font-size:13px;color:var(--mut);margin-top:12px}
+.legend span{display:inline-flex;gap:8px;align-items:center}
+.legend i{display:inline-block;width:24px;height:0;border-top:2px solid var(--ink-2)}
+.legend i.d{border-top-style:dashed}
+.legend i.lg{width:16px;height:12px;border:1.5px solid var(--ink-2);border-radius:3px}
+.legend i.lg.term{border-width:3px;border-style:double}
+.legend i.lg.main{background:var(--brand-tint);border-color:var(--brand)}
+
+.admin-steps{margin:8px 0 0;padding-left:20px;font-size:14px}
+.admin-steps li{margin:6px 0}
+
+/* ===== 스토리보드 ===== */
+.sb{border:1px solid var(--line);border-radius:var(--r-md);margin-top:24px;overflow:hidden;break-inside:avoid}
+.sb-head{display:grid;grid-template-columns:150px minmax(0,1fr) minmax(0,1.2fr) 150px;background:var(--soft);border-bottom:1px solid var(--line);font-size:13px}
+.sb-head>div{padding:10px 14px;border-right:1px solid var(--line)}
+.sb-head>div:last-child{border-right:0}
+.sb-head small{display:block;font-size:12px;color:var(--mut);font-weight:500}
+.sb-head b{font-weight:600}
+.sb-head .sid{font-family:var(--mono);font-size:13px}
+.sb-body{display:grid;grid-template-columns:332px minmax(0,1fr)}
+.sb-wire{background:repeating-linear-gradient(0deg,transparent 0 23px,#EEF0F2 23px 24px),repeating-linear-gradient(90deg,transparent 0 23px,#EEF0F2 23px 24px),#FAFAF8;padding:28px 24px;border-right:1px solid var(--line);display:flex;justify-content:center;align-items:flex-start}
+.sb-desc{padding:20px 24px}
+.sb-desc ol{list-style:none;margin:0;padding:0;display:grid;gap:14px}
+.sb-desc li{display:grid;grid-template-columns:24px minmax(0,1fr);gap:10px;font-size:14px}
+.sb-desc li>.n{margin-top:1px}
+.sb-desc li b{display:block;font-weight:600;margin-bottom:2px}
+.sb-desc ul{margin:2px 0 0;padding-left:16px;color:var(--ink-2)}
+.sb-desc ul li{display:list-item;font-size:13px;margin:2px 0}
+.sb-desc .refs{font-size:12px;color:var(--mut);margin-top:16px;padding-top:12px;border-top:1px dashed var(--line)}
+.n,.mk{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--brand);color:#fff;font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
+.mk{position:absolute;left:-24px;top:0;z-index:2;box-shadow:0 0 0 2px #fff}
+.mk.in{left:auto;right:-8px;top:-8px}
+
+/* 휴대폰 와이어 */
+.ph{width:284px;flex:none;background:#E4E7EB;border-radius:36px;padding:12px;position:relative}
+.scr{background:var(--w-0);border-radius:26px;min-height:560px;display:flex;flex-direction:column;position:relative;color:var(--w-ink);font-size:12px;line-height:1.45}
+.sbar{display:flex;justify-content:space-between;padding:10px 18px 4px;font-size:11px;font-weight:600;color:var(--w-ink)}
+.ab{display:flex;align-items:center;height:40px;padding:0 12px;border-bottom:1px solid var(--w-2);font-size:13px;font-weight:600;gap:8px}
+.ab .bk{width:16px;height:16px;border-left:2px solid var(--w-ink);border-bottom:2px solid var(--w-ink);transform:rotate(45deg) scale(.6)}
+.ab .t{flex:1;text-align:center;margin-right:24px}
+.pc{padding:12px;display:flex;flex-direction:column;gap:10px;flex:1}
+.w{position:relative;border:1px solid var(--w-3);border-radius:8px;padding:10px;background:var(--w-0)}
+.w.f{background:var(--w-1);border-color:var(--w-2)}
+.w .lb{font-size:11px;color:#5B6470;margin-bottom:2px}
+.w .tt{font-size:13px;font-weight:600;color:var(--w-ink)}
+.w .row{display:flex;justify-content:space-between;gap:8px;font-variant-numeric:tabular-nums}
+.w .row+.row{margin-top:4px}
+.w .row.sum{border-top:1px solid var(--w-2);margin-top:8px;padding-top:8px;font-weight:700;font-size:14px}
+.w .muted{color:#5B6470}
+.wimg{height:56px;border-radius:6px;background:linear-gradient(135deg,transparent 49.5%,var(--w-3) 49.5% 50.5%,transparent 50.5%),linear-gradient(45deg,transparent 49.5%,var(--w-3) 49.5% 50.5%,transparent 50.5%),var(--w-2)}
+.wchip{display:inline-flex;align-items:center;height:28px;padding:0 10px;border:1px solid var(--w-3);border-radius:999px;font-size:11px;background:#fff;margin:0 4px 4px 0}
+.wchip.on{background:var(--w-ink);border-color:var(--w-ink);color:#fff}
+.wst{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:999px;background:var(--w-2);font-size:11px;font-weight:600}
+.wbtn{position:relative;display:flex;align-items:center;justify-content:center;height:44px;border-radius:10px;background:var(--w-ink);color:#fff;font-size:13px;font-weight:600}
+.wbtn.g{background:#fff;color:var(--w-ink);border:1px solid var(--w-3)}
+.wbtn.t{background:transparent;color:var(--w-ink);text-decoration:underline;height:36px}
+.wbtn.dis{background:var(--w-3);color:#fff}
+.wcta{margin-top:auto;padding:12px;border-top:1px solid var(--w-2);display:flex;flex-direction:column;gap:6px}
+.wcta .hint{font-size:11px;color:#5B6470;text-align:center}
+.wbar{display:flex;gap:2px;margin:8px 0 4px}
+.wbar span{flex:1;height:8px;background:var(--w-2);border-radius:2px}
+.wbar span.on{background:var(--w-ink)}
+.wbar-l{display:flex;font-size:10px;color:#5B6470}
+.wbar-l span{flex:1}
+.wtl{list-style:none;margin:0;padding:0}
+.wtl li{display:grid;grid-template-columns:14px 1fr;gap:8px;padding:4px 0}
+.wtl i{width:10px;height:10px;border-radius:50%;border:2px solid var(--w-ink);margin-top:3px}
+.wtl i.on{background:var(--w-ink)}
+.wtl i.off{border-color:var(--w-4)}
+.wta{height:64px;border:1px solid var(--w-3);border-radius:8px;padding:8px;color:#8A939E;font-size:11px}
+.wadd{display:flex;gap:6px}
+.wadd span{width:52px;height:52px;border:1px dashed var(--w-4);border-radius:8px;display:grid;place-items:center;color:#5B6470;font-size:16px}
+.dim{position:absolute;inset:0;background:rgba(25,31,40,.48);border-radius:26px;display:flex;align-items:center;justify-content:center;padding:16px;z-index:1}
+.dlg{position:relative;background:#fff;border-radius:16px;padding:18px 16px 14px;width:100%}
+.dlg .tt{font-size:15px;font-weight:700;margin-bottom:6px}
+.dlg .cmp{display:flex;align-items:center;justify-content:center;gap:10px;margin:12px 0;padding:10px;background:var(--w-1);border-radius:8px;font-variant-numeric:tabular-nums}
+.dlg .cmp s{color:#5B6470}
+.dlg .cmp b{font-size:16px}
+.dlg .bt{display:grid;grid-template-columns:1fr 1.6fr;gap:6px;margin-top:12px}
+.wtabs{display:flex;border-bottom:1px solid var(--w-2)}
+.wtabs span{flex:1;text-align:center;padding:10px 0;font-size:12px;color:#5B6470}
+.wtabs span.on{color:var(--w-ink);font-weight:700;box-shadow:inset 0 -2px 0 var(--w-ink)}
+.cpn{position:relative;display:grid;grid-template-columns:1fr auto;gap:4px 8px;border:1px solid var(--w-3);border-radius:10px;padding:12px}
+.cpn .amt{font-size:16px;font-weight:700}
+.cpn .tag{align-self:start;font-size:10px;font-weight:700;border:1px solid var(--w-ink);border-radius:999px;padding:2px 8px}
+.cpn .sm{grid-column:1/-1;font-size:11px;color:#5B6470}
+
+/* 관리자 와이어 */
+.sb.adm .sb-body{grid-template-columns:minmax(0,1fr)}
+.sb.adm .sb-wire{border-right:0;border-bottom:1px solid var(--line);display:block;overflow-x:auto;padding:28px 28px 28px 36px}
+.sb.adm .sb-desc ol{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 32px}
+.aw{min-width:900px;background:#fff;border:1px solid var(--w-3);border-radius:10px;display:grid;grid-template-columns:150px minmax(0,1fr);color:var(--w-ink);font-size:12px;line-height:1.45;overflow:visible}
+.aw-nav{background:var(--w-1);border-right:1px solid var(--w-2);padding:14px 10px;border-radius:10px 0 0 10px}
+.aw-nav .logo{font-weight:700;font-size:13px;padding:0 8px 12px}
+.aw-nav div{padding:8px;border-radius:6px;color:#5B6470}
+.aw-nav div.on{background:#fff;color:var(--w-ink);font-weight:600;border:1px solid var(--w-2)}
+.aw-main{padding:16px 18px}
+.aw-top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.aw-top .tt{font-size:15px;font-weight:700}
+.aw-top .sp{flex:1}
+.aw-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:14px}
+.kv{display:grid;grid-template-columns:84px 1fr;gap:6px 10px;font-variant-numeric:tabular-nums}
+.kv dt{color:#5B6470}
+.kv dd{margin:0}
+.wr{display:flex;gap:6px;flex-wrap:wrap}
+.wrad{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 10px;border:1px solid var(--w-3);border-radius:6px;font-size:12px}
+.wrad i{width:12px;height:12px;border:1.5px solid var(--w-4);border-radius:50%}
+.wrad.on{border-color:var(--w-ink);font-weight:600}
+.wrad.on i{border:4px solid var(--w-ink)}
+.win{height:32px;border:1px solid var(--w-3);border-radius:6px;padding:0 10px;display:flex;align-items:center;color:var(--w-ink);font-variant-numeric:tabular-nums}
+.win.ph2{color:#8A939E}
+.wtog{display:inline-block;width:28px;height:16px;border-radius:999px;background:var(--w-3);position:relative;vertical-align:-3px}
+.wtog::after{content:"";position:absolute;left:2px;top:2px;width:12px;height:12px;border-radius:50%;background:#fff}
+.wtog.on{background:var(--w-ink)}
+.wtog.on::after{left:14px}
+.atbl{width:100%;border-collapse:collapse;font-size:12px;min-width:0}
+.atbl th,.atbl td{padding:7px 8px;border-bottom:1px solid var(--w-2);text-align:left;white-space:nowrap}
+.atbl th{background:var(--w-1);color:#5B6470;font-weight:600;font-size:11px}
+.atbl td.r{text-align:right}
+.atbl tr.sel td{background:#F1F2F4;font-weight:600}
+.fl{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.wbtn.sm{height:32px;padding:0 14px;font-size:12px;border-radius:6px;display:inline-flex}
+.wh{font-size:12px;font-weight:700;margin:0 0 6px}
+.wsep{border-top:1px solid var(--w-2);margin:12px 0}
+
+/* 하단 */
+.foot{font-size:13px;color:var(--mut);padding:24px 0 48px;text-align:center}
+.back{display:inline-flex;align-items:center;min-height:44px;padding:0 16px;border-radius:999px;background:var(--card);border:1px solid var(--line);color:var(--ink);text-decoration:none;font-size:14px;font-weight:500}
+
+/* ===== 반응형 ===== */
+@media (max-width: 1024px){
+  .toc ol{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .sb-head{grid-template-columns:130px minmax(0,1fr) minmax(0,1fr)}
+  .sb-head>div:nth-child(4){display:none}
+}
+@media (max-width: 760px){
+  .wrap{padding:0 16px}
+  .doc-head{padding:28px 0 16px}
+  .doc-head h1{font-size:24px}
+  .doc-head .lead{font-size:15px}
+  .meta{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .meta div{border-right:1px solid var(--line-2);border-bottom:1px solid var(--line-2);padding:12px 16px}
+  .meta div:nth-child(2n){border-right:0}
+  .meta div:nth-last-child(-n+2){border-bottom:0}
+  .note-figma{padding:16px}
+  .toc{padding:16px}
+  .toc ol{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 12px}
+  .sec{padding:20px 16px;border-radius:16px}
+  .sec>h2{font-size:20px}
+  .scope{grid-template-columns:1fr}
+  .calc{grid-template-columns:1fr}
+  .steps li{grid-template-columns:28px minmax(0,1fr)}
+  .steps li .res{grid-column:2;text-align:left}
+  .scroll-hint{display:block}
+  .sb-head{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .sb-head>div:nth-child(2){border-right:0}
+  .sb-head>div:nth-child(3){grid-column:1/-1;border-top:1px solid var(--line);border-right:0}
+  .sb-head>div:nth-child(4){display:block;grid-column:1/-1;border-top:1px solid var(--line)}
+  .adm-hint{padding:8px 16px 0;margin:0}
+  .sb-body{grid-template-columns:1fr}
+  .sb-wire{border-right:0;border-bottom:1px solid var(--line);padding:24px 16px 24px 32px}
+  .sb-desc{padding:16px}
+  .sb.adm .sb-desc ol{grid-template-columns:1fr}
+  .sb.adm .sb-wire{padding:24px 16px 24px 32px}
+  th,td{padding:10px 12px}
+}
+@media (max-width: 360px){
+  .ph{width:264px}
+}
+
+/* ===== 인쇄(PDF 저장) ===== */
+@page{size:A4;margin:12mm}
+@media print{
+  body{background:#fff;font-size:11pt}
+  .ribbon{background:#fff;color:var(--ink);border-bottom:1px solid #999}
+  .toc,.back,.scroll-hint{display:none !important}
+  .wrap{max-width:none;padding:0}
+  .sec{border:0;padding:0;margin-top:20px;break-before:page}
+  .sec#s1{break-before:auto}
+  .tw,.diagram,.sb.adm .sb-wire{overflow:visible;border-color:#bbb}
+  .t-wide,.t-mid,.t-xl{min-width:0}
+  table{font-size:9pt}
+  th,td{padding:5px 6px}
+  .diagram svg{min-width:0}
+  .aw{min-width:0;grid-template-columns:110px minmax(0,1fr)}
+  .aw-grid{grid-template-columns:1fr !important}
+  .sb-head>div:nth-child(4){display:block}
+  .sb{break-inside:avoid}
+  .sb-body{grid-template-columns:300px 1fr}
+  .sb-wire{background:#fff}
+  tr,.steps li,.box{break-inside:avoid}
+  a{color:inherit;text-decoration:none}
+  .mk,.n{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .ph,.dim,.wbtn,.wchip.on,.wbar span.on,.hl td,.chip{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+<div class="ribbon" id="top"><b>제안용 기획 샘플 · 예시</b> — '가람레슨'은 이 샘플을 위해 만든 가상 서비스예요. 금액·수수료율·날짜는 모두 예시 값이에요.</div>
+
+<div class="wrap">
+<header class="doc-head">
+  <p class="doc-kind">화면설계서 · 기능 명세 · 서비스 정책서</p>
+  <h1>예약 취소·환불, 쿠폰 복원, 노쇼 정책 고도화</h1>
+  <p class="lead">1:1 레슨 예약·매칭 앱 '가람레슨'(고객 앱 + 코치 앱 + 웹 관리자)에서, 취소할 때 환불 금액이 미리 보이고 쿠폰·정산·노쇼까지 규칙대로 처리되게 바꾸는 고도화 건이에요.</p>
+  <dl class="meta">
+    <div><dt>문서 버전</dt><dd>v1.2.1 <span class="chip c-info">개발 진행 중</span></dd></div>
+    <div><dt>최종 수정</dt><dd class="num">2026-10-26 (예시)</dd></div>
+    <div><dt>대상</dt><dd>iOS·Android 고객 앱, 웹 관리자</dd></div>
+    <div><dt>관련 문서</dt><dd>결제 v1.0, 정산 v0.9 (기존)</dd></div>
+  </dl>
+  <div class="note-figma" role="note">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5" stroke-linecap="round"/></svg>
+    <div>실제 작업은 <b>Figma</b>에서 화면설계서를 쓰고 기존 파일을 고쳐요(디스크립션 컴포넌트, 버전 페이지, 변경 표시). 이 샘플은 링크로 바로 보실 수 있게 같은 형식을 웹 페이지로 옮긴 거예요. 메뉴의 인쇄로 PDF 저장도 돼요.</div>
+  </div>
+  <nav class="toc" aria-label="목차">
+    <h2>목차</h2>
+    <ol>
+      <li><a href="#s1"><span>1</span>현황 분석·범위</a></li>
+      <li><a href="#s2"><span>2</span>서비스 정책</a></li>
+      <li><a href="#s3"><span>3</span>예약 상태 전이</a></li>
+      <li><a href="#s4"><span>4</span>업무 프로세스</a></li>
+      <li><a href="#s5"><span>5</span>화면설계 · 고객 앱</a></li>
+      <li><a href="#s6"><span>6</span>화면설계 · 관리자</a></li>
+      <li><a href="#s7"><span>7</span>기능 명세서</a></li>
+      <li><a href="#s8"><span>8</span>예외처리 시나리오</a></li>
+      <li><a href="#s9"><span>9</span>알림 정의</a></li>
+      <li><a href="#s10"><span>10</span>결정 필요 사항</a></li>
+      <li><a href="#s11"><span>11</span>변경 이력·개발 질의</a></li>
+    </ol>
+  </nav>
+</header>
+
+<main>
+<!-- ================= 1 ================= -->
+<section class="sec" id="s1">
+  <h2><span class="no">1</span>현황 분석과 이번 범위</h2>
+  <p class="sub">기존 기획서·운영 문의 유형을 보고 정리한 문제와 개선 방향이에요. (가상의 서비스라 문제도 예시예요.)</p>
+  <div class="tw"><table class="t-mid">
+    <thead><tr><th>지금 (AS-IS)</th><th>생기는 문제</th><th>바꿀 방향 (TO-BE)</th><th>관련</th></tr></thead>
+    <tbody>
+      <tr><td>취소 버튼을 누른 뒤에야 환불 금액을 알 수 있음</td><td>"얼마 돌려받나요" 문의, 수수료 분쟁</td><td>취소 전에 결제·수수료·환불·쿠폰 처리를 한 화면에 보여 줌</td><td class="nw"><a href="#APP-BK-020">APP-BK-020</a></td></tr>
+      <tr><td>쿠폰 복원을 운영자가 수동으로 처리</td><td>복원 누락, 사람마다 기준이 다름</td><td>취소 사유·환불률 규칙으로 자동 복원, 만료 쿠폰은 대체 발급</td><td class="nw"><a href="#p-05">P-05</a></td></tr>
+      <tr><td>노쇼를 코치가 채팅으로만 알림</td><td>기록이 없어 정산·제재 근거가 없음</td><td>노쇼 신고 → 고객 이의제기 → 관리자 판정 상태 추가</td><td class="nw"><a href="#p-07">P-07</a></td></tr>
+      <tr><td>관리자 취소에 귀책 구분 없음</td><td>코치 보상·쿠폰 처리를 매번 따로 계산</td><td>귀책 선택을 필수로, 환불·쿠폰·보상 자동 계산</td><td class="nw"><a href="#ADM-BK-110">ADM-BK-110</a></td></tr>
+      <tr><td>결제 직후 앱이 꺼지면 예약이 안 보임</td><td>중복 결제, "돈만 나갔어요" 문의</td><td>PG 웹훅을 기준으로 예약 확정, 다시 열면 결과 안내</td><td class="nw"><a href="#e-02">E-02</a></td></tr>
+    </tbody>
+  </table></div>
+  <p class="scroll-hint">표는 옆으로 밀어서 볼 수 있어요.</p>
+
+  <div class="scope">
+    <div class="box"><h4>이번 범위 (v1.2)</h4><ul>
+      <li>고객 앱: 예약 상세, 취소·환불 미리보기, 금액 변경 안내, 취소 완료, 노쇼 이의제기, 쿠폰함 표시</li>
+      <li>관리자: 예약 상세의 강제 취소, 분쟁·노쇼 검토</li>
+      <li>서버 정책: 수수료 판정, 쿠폰 복원, 부분 환불, 중복 결제, 정산 보류·차감</li>
+      <li>알림: 푸시, 알림톡, 운영 Slack</li>
+    </ul></div>
+    <div class="box out"><h4>범위 밖 (다음 버전에서)</h4><ul>
+      <li>일정 변경(다른 시간으로 옮기기): v1.3 예정. 지금은 취소 후 다시 예약</li>
+      <li>다회권(4회권 등) 부분 환불</li>
+      <li>포인트 결제·환불</li>
+      <li>코치 앱 화면 설계(알림 문구만 이 문서에 포함)</li>
+    </ul></div>
+  </div>
+</section>
+
+<!-- ================= 2 ================= -->
+<section class="sec" id="s2">
+  <h2><span class="no">2</span>서비스 정책</h2>
+  <p class="sub">개발·CS·정산이 같은 기준을 쓰도록 숫자와 판정 순서를 정해요. 시간은 모두 서버 시각(KST)이고, '수업 시작 시각'을 기준으로 남은 시간을 초 단위로 계산해요.</p>
+
+  <h3 id="p-01"><span class="id">P-01</span>취소 환불 판정 순서</h3>
+  <p>위에서부터 차례로 보고, 처음 맞는 규칙 하나만 적용해요. 여러 규칙이 겹쳐도 고객에게 가장 유리한 규칙이 먼저 오도록 순서를 정했어요.</p>
+  <ol class="steps">
+    <li><b>귀책이 코치·불가항력·플랫폼인가요? (<a href="#p-04">P-04</a>)</b><span class="res">전액 환불 · 쿠폰 복원</span></li>
+    <li><b>예약 상태가 '수락대기'인가요? (코치가 아직 수락 전)</b><span class="res">전액 환불 · 쿠폰 복원</span></li>
+    <li><b>PG 승인 후 30분 안이고, 수업 시작까지 24시간 이상 남았나요?</b><span class="res">전액 환불 · 쿠폰 복원</span></li>
+    <li><b>위에 모두 해당하지 않으면 시간 구간표(<a href="#p-02">P-02</a>)를 적용해요.</b><span class="res">구간별 수수료</span></li>
+  </ol>
+  <p class="help">R3의 '24시간 이상' 조건: 수업 직전에 예약하고 바로 취소해 코치 일정만 비게 만드는 경우를 막으려고 붙였어요(검토 1회차에서 R3와 3시간 미만 100% 구간이 충돌해 추가).</p>
+
+  <h3 id="p-02"><span class="id">P-02</span>고객 취소 수수료 (시간 구간)</h3>
+  <p>예시 결제: 수업료(정가) 60,000원 − 첫 수업 쿠폰 10,000원 = <b>카드 결제 50,000원</b>. 플랫폼 이용 수수료는 15%(예시)예요.</p>
+  <div class="tw"><table class="t-wide">
+    <thead><tr><th>수업 시작까지 남은 시간</th><th class="r">수수료율</th><th class="r">수수료</th><th class="r">고객 환불</th><th>쿠폰</th><th class="r">코치 보상</th><th>기타</th></tr></thead>
+    <tbody>
+      <tr><td>72시간 이상</td><td class="r">0%</td><td class="r">0원</td><td class="r">50,000원</td><td><span class="chip c-ok">복원</span></td><td class="r">0원</td><td>—</td></tr>
+      <tr class="hl"><td>72시간 미만 ~ 24시간 이상</td><td class="r">30%</td><td class="r">15,000원</td><td class="r">35,000원</td><td><span class="chip c-neu">소멸</span></td><td class="r">15,300원</td><td>화면 예시가 이 구간이에요</td></tr>
+      <tr><td>24시간 미만 ~ 3시간 이상</td><td class="r">50%</td><td class="r">25,000원</td><td class="r">25,000원</td><td><span class="chip c-neu">소멸</span></td><td class="r">25,500원</td><td>—</td></tr>
+      <tr><td>3시간 미만 (수업 시작 전)</td><td class="r">100%</td><td class="r">50,000원</td><td class="r">0원</td><td><span class="chip c-neu">소멸</span></td><td class="r">51,000원</td><td>취소는 가능(슬롯 반환), 이용 제한 없음</td></tr>
+      <tr><td>수업 시작 후</td><td class="r">—</td><td class="r">—</td><td class="r">—</td><td>—</td><td class="r">—</td><td>앱에서 취소 불가 → 노쇼·분쟁 절차(<a href="#p-07">P-07</a>)</td></tr>
+    </tbody>
+  </table></div>
+  <p class="help">경계: 남은 시간이 정확히 72:00:00이면 0% 구간이에요(이상·미만). 화면을 연 시각이 아니라 <b>'취소하기'를 누른 시각</b>으로 다시 계산해요(<a href="#e-06">E-06</a>).</p>
+
+  <h3 id="p-03"><span class="id">P-03</span>환불 금액 계산과 부분 환불</h3>
+  <dl class="calc">
+    <div><dt>고객 수수료</dt><dd class="big">실결제액 × 수수료율</dd><dd>10원 미만은 버려요(고객에게 유리하게). 수수료가 실결제액을 넘는 일은 없어요.</dd></div>
+    <div><dt>고객 환불</dt><dd class="big">실결제액 − 수수료</dd><dd>0원보다 크고 실결제액보다 작으면 PG <b>부분취소</b>, 실결제액과 같으면 <b>전체취소</b>, 0원이면 PG를 부르지 않아요.</dd></div>
+    <div><dt>코치 보상</dt><dd class="big">정가 × 수수료율 × 85%</dd><dd>10원 미만은 버려요. 쿠폰은 플랫폼이 부담하므로 코치 몫은 정가로 계산해요(<a href="#d-01" style="white-space:nowrap">D-01 결정 필요</a>).</dd></div>
+  </dl>
+  <p class="help">왜 수수료를 정가가 아닌 실결제액으로 계산하나요? 정가 기준이면 3시간 미만 구간에서 수수료(60,000원)가 낸 돈(50,000원)보다 커져요. 쿠폰을 늘 복원하면 할인을 두 번 받는 경우도 생겨요.</p>
+
+  <h3 id="p-04"><span class="id">P-04</span>귀책별 처리</h3>
+  <div class="tw"><table class="t-wide">
+    <thead><tr><th>귀책</th><th>예</th><th>고객 환불</th><th>쿠폰</th><th>코치 보상·불이익</th><th>누가 정하나</th></tr></thead>
+    <tbody>
+      <tr><td><b>고객</b></td><td>앱에서 직접 취소, CS로 취소 요청</td><td>P-01 → P-02</td><td>P-05</td><td>P-02 보상</td><td>앱 자동 / 관리자(CS 요청 시)</td></tr>
+      <tr><td><b>코치</b></td><td>코치 거절·취소, 수락 기한 초과, 코치 활동 정지</td><td>전액</td><td>복원</td><td>보상 0원, 코치 취소 횟수 +1 (기한 초과 포함)</td><td>자동 / 관리자</td></tr>
+      <tr><td><b>불가항력</b></td><td>실외 코트 우천·폭염 경보, 시설 폐쇄</td><td>전액</td><td>복원</td><td>보상 0원, 불이익 없음</td><td>관리자 (코치 요청 → 승인)</td></tr>
+      <tr><td><b>플랫폼</b></td><td>시스템 장애로 중복 예약·결제 오류</td><td>전액</td><td>복원</td><td>보상 여부는 관리자 입력 (<a href="#d-02">D-02</a>)</td><td>관리자</td></tr>
+    </tbody>
+  </table></div>
+  <p class="help">관리자가 CS 요청으로 '고객 귀책' 취소를 할 때는 처리한 시각이 아니라 <b>고객이 상담으로 취소를 요청한 시각</b>을 기준 시각으로 넣어요. 상담 번호가 꼭 있어야 하고, 미래 시각은 넣을 수 없어요(<a href="#e-11">E-11</a>).</p>
+
+  <h3 id="p-05"><span class="id">P-05</span>쿠폰 복원</h3>
+  <div class="tw"><table class="t-mid">
+    <thead><tr><th>상황</th><th>처리</th><th>쿠폰함 표시</th></tr></thead>
+    <tbody>
+      <tr><td>전액 환불 (P-01의 R1~R3, P-02의 0% 구간)</td><td>같은 쿠폰을 다시 '사용 가능'으로. 원래 만료일 유지</td><td><span class="chip c-ok">복원됨</span></td></tr>
+      <tr><td>전액 환불인데 원래 만료일이 지났거나 24시간 안 남음</td><td>같은 금액·조건의 쿠폰을 7일짜리로 새로 발급. 원 쿠폰은 '대체 발급' 처리</td><td><span class="chip c-info">다시 발급</span></td></tr>
+      <tr><td>수수료가 있는 취소 (30% · 50% · 100%)</td><td>쿠폰 사용 처리(소멸). 다시 주지 않음</td><td><span class="chip c-neu">사용함</span></td></tr>
+      <tr><td>노쇼 확정</td><td>쿠폰 사용 처리(소멸)</td><td><span class="chip c-neu">사용함</span></td></tr>
+      <tr><td>결제대기 만료·결제 실패</td><td>결제 전이라 '사용 예정' 잠금만 풀어요(복원 이력 없음)</td><td>변화 없음</td></tr>
+      <tr><td>'첫 수업' 같은 1회 한정 쿠폰</td><td>복원 때 대상 조건을 다시 보지 않아요(이미 대상자였음)</td><td>위와 같음</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 id="p-06"><span class="id">P-06</span>예약 가능 시간, 슬롯 점유, 중복 결제</h3>
+  <div class="tw"><table class="t-mid">
+    <thead><tr><th>항목</th><th>정책</th></tr></thead>
+    <tbody>
+      <tr><td>예약 가능 시각</td><td>수업 시작 6시간 전까지만 예약 요청 가능</td></tr>
+      <tr><td>코치 수락 기한</td><td>요청 후 12시간 또는 수업 시작 3시간 전 중 <b>먼저 오는 시각</b>. 넘기면 자동 취소(코치 귀책)</td></tr>
+      <tr><td>슬롯 점유</td><td>'결제하기'를 누르면 10분 동안 그 시간을 잡아 둠(결제대기). 같은 코치·같은 시간에 결제대기·수락대기·예약확정은 하나만 존재(DB 유일 제약)</td></tr>
+      <tr><td>주문번호</td><td>결제대기 1건마다 주문번호 1개. 같은 주문번호로 승인이 두 번 오면 나중 것을 1분 안에 자동 전체취소(<a href="#e-05">E-05</a>)</td></tr>
+      <tr><td>요청 중복</td><td>결제·취소 요청에 멱등키를 붙여 같은 요청은 한 번만 처리</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 id="p-07"><span class="id">P-07</span>노쇼와 분쟁</h3>
+  <div class="tw"><table class="t-mid">
+    <thead><tr><th>항목</th><th>정책</th></tr></thead>
+    <tbody>
+      <tr><td>코치 노쇼 신고</td><td>수업 시작 15분 뒤부터 수업 종료 12시간 뒤까지만 가능</td></tr>
+      <tr><td>고객 이의제기</td><td>신고 알림 후 24시간 안. 판정을 위해 이 예약의 채팅 기록을 운영팀이 본다는 안내에 동의해야 제출</td></tr>
+      <tr><td>노쇼 확정</td><td>24시간 동안 이의가 없거나, 관리자가 노쇼로 판정. 환불 없음, 코치 보상은 정가 × 85%</td></tr>
+      <tr><td>고객 '수업 미진행' 신고</td><td>수업 종료 72시간 안. 수업완료 상태에서도 가능 → 분쟁검토. 한 예약에 분쟁은 한 번만 열리고, 판정이 끝난 뒤에는 관리자 재검토로만 다시 열 수 있음</td></tr>
+      <tr><td>관리자 재검토</td><td>노쇼 확정 후 30일 안에 CS로 들어온 건은 관리자가 분쟁을 다시 열 수 있음</td></tr>
+      <tr><td>이용 제한</td><td>90일 안에 노쇼 확정 2회면 30일 동안 새 예약 불가. 관리자가 사유를 적고 해제 가능</td></tr>
+      <tr><td>자동 완료</td><td>수업 종료 24시간 뒤, 노쇼 신고·분쟁이 없으면 수업완료(신고 기한 12시간보다 늦게 둠)</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 id="p-08"><span class="id">P-08</span>정산 시점, 보류, 차감</h3>
+  <div class="tw"><table class="t-mid">
+    <thead><tr><th>항목</th><th>정책</th></tr></thead>
+    <tbody>
+      <tr><td>정산 확정</td><td>수업완료: 수업 종료 72시간 뒤(분쟁 접수 기한과 같은 기준) 열린 분쟁이 없으면 확정<br>분쟁 판정으로 수업완료·노쇼확정이 되면 판정 시점에 바로 확정<br>노쇼 확정(이의 없음)·취소 보상: 확정·취소 시점에 바로 확정</td></tr>
+      <tr><td>지급 주기</td><td>매주 월요일 0시에 지난주(월~일) 확정분을 모아, 수요일에 지급 (예시)</td></tr>
+      <tr><td>정산 보류</td><td>노쇼검토·분쟁검토 상태인 동안 그 예약의 정산은 보류. 판정하면 자동으로 풀림</td></tr>
+      <tr><td>지급 후 환불</td><td>이미 지급한 건이 분쟁 판정으로 환불되면 다음 정산에서 차감. 4주 안에 다 못 빼면 관리자 수동 처리 목록으로</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ================= 3 ================= -->
+<section class="sec" id="s3">
+  <h2><span class="no">3</span>예약 상태 전이</h2>
+  <p class="sub">예약 상태 9개와 전이 조건이에요. 환불 상태(환불요청 → 완료·실패)와 정산 상태는 예약 상태와 따로 관리해요.</p>
+  <div class="diagram" role="img" aria-label="예약 상태 전이도: 결제대기에서 수락대기, 예약확정, 수업완료로 가고, 취소·만료·노쇼검토·노쇼확정·분쟁검토로 갈라지는 흐름">
+  <svg viewBox="0 0 1090 560" xmlns="http://www.w3.org/2000/svg" font-family="Pretendard Variable, Pretendard, -apple-system, sans-serif">
+    <defs>
+      <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#4E5968"/></marker>
+    </defs>
+    <g fill="none" stroke="#4E5968" stroke-width="1.6" marker-end="url(#ar)">
+      <path d="M190 88H288"/>
+      <path d="M110 116V248"/>
+      <path d="M190 278H330V118" stroke-dasharray="6 5"/>
+      <path d="M450 88H558"/>
+      <path d="M370 116V400H140V428"/>
+      <path d="M560 106H540V458H192"/>
+      <path d="M720 88H878"/>
+      <path d="M680 116V248"/>
+      <path d="M800 278H878"/>
+      <path d="M720 306V428"/>
+      <path d="M980 116V248"/>
+      <path d="M920 250V118"/>
+      <path d="M900 306V448H802"/>
+      <path d="M800 474H1000V308" stroke-dasharray="6 5"/>
+      <path d="M1040 306V524H110V488"/>
+    </g>
+    <g font-size="12" fill="#4E5968">
+      <text x="240" y="78" text-anchor="middle">결제 승인</text>
+      <text x="120" y="176">10분 경과</text><text x="120" y="192">결제 실패·이탈</text>
+      <text x="200" y="298">늦은 승인 + 슬롯 빔</text><text x="200" y="314">(E-04)</text>
+      <text x="505" y="78" text-anchor="middle">코치 수락</text>
+      <text x="380" y="176">고객 취소</text><text x="380" y="192">코치 거절</text><text x="380" y="208">수락 기한 초과</text><text x="380" y="224">관리자 취소</text><text x="380" y="244" font-weight="600" fill="#191F28">→ 전액·쿠폰 복원</text>
+      <text x="380" y="448" text-anchor="middle">고객 · 코치 · 관리자 취소 (P-01 판정)</text>
+      <text x="800" y="72" text-anchor="middle">코치 완료 처리</text><text x="800" y="104" text-anchor="middle">종료 24h 뒤 자동</text>
+      <text x="690" y="172">코치 노쇼 신고</text><text x="690" y="188">시작 15분 뒤~</text><text x="690" y="204">종료 12h 뒤</text>
+      <text x="839" y="268" text-anchor="middle">이의제기</text>
+      <text x="730" y="372">24h 이의 없음</text>
+      <text x="990" y="172">수업 미진행</text><text x="990" y="188">신고</text><text x="990" y="204">(종료 72h 안)</text>
+      <text x="912" y="208" text-anchor="end" font-weight="600" fill="#191F28">판정: 완료</text>
+      <text x="892" y="404" text-anchor="end" font-weight="600" fill="#191F28">판정: 노쇼</text>
+      <text x="900" y="494" text-anchor="middle">관리자 재검토 (30일 안)</text>
+      <text x="575" y="544" text-anchor="middle" font-weight="600" fill="#191F28">판정: 취소 — 귀책 지정 (P-04)</text>
+    </g>
+    <g font-size="14" font-weight="700" text-anchor="middle" fill="#191F28">
+      <rect x="30" y="60" width="160" height="56" rx="12" fill="#fff" stroke="#4E5968" stroke-width="1.6"/>
+      <text x="110" y="86">결제대기</text>
+      <rect x="290" y="60" width="160" height="56" rx="12" fill="#fff" stroke="#4E5968" stroke-width="1.6"/>
+      <text x="370" y="86">수락대기</text>
+      <rect x="560" y="60" width="160" height="56" rx="12" fill="#FFF3EB" stroke="#C9480B" stroke-width="2"/>
+      <text x="640" y="86">예약확정</text>
+      <rect x="880" y="60" width="160" height="56" rx="12" fill="#fff" stroke="#4E5968" stroke-width="1.6"/>
+      <text x="960" y="86">수업완료</text>
+      <rect x="30" y="250" width="160" height="56" rx="12" fill="#F0F2F5" stroke="#4E5968" stroke-width="3" stroke-dasharray="0"/>
+      <rect x="34" y="254" width="152" height="48" rx="9" fill="none" stroke="#fff" stroke-width="1.5"/>
+      <text x="110" y="276">만료</text>
+      <rect x="560" y="250" width="240" height="56" rx="12" fill="#fff" stroke="#4E5968" stroke-width="1.6"/>
+      <text x="680" y="276">노쇼검토</text>
+      <rect x="880" y="250" width="180" height="56" rx="12" fill="#fff" stroke="#4E5968" stroke-width="1.6"/>
+      <text x="970" y="276">분쟁검토</text>
+      <rect x="30" y="430" width="160" height="56" rx="12" fill="#F0F2F5" stroke="#4E5968" stroke-width="3"/>
+      <rect x="34" y="434" width="152" height="48" rx="9" fill="none" stroke="#fff" stroke-width="1.5"/>
+      <text x="110" y="456">취소</text>
+      <rect x="560" y="430" width="240" height="56" rx="12" fill="#F0F2F5" stroke="#4E5968" stroke-width="3"/>
+      <rect x="564" y="434" width="232" height="48" rx="9" fill="none" stroke="#fff" stroke-width="1.5"/>
+      <text x="680" y="456">노쇼확정</text>
+    </g>
+    <g font-size="11" text-anchor="middle" fill="#636D7B" font-family="ui-monospace, Menlo, monospace">
+      <text x="110" y="104">HOLD</text><text x="370" y="104">REQUESTED</text><text x="640" y="104">CONFIRMED</text><text x="960" y="104">COMPLETED</text>
+      <text x="110" y="294">EXPIRED</text><text x="680" y="294">NOSHOW_REVIEW · 정산 보류</text><text x="970" y="294">DISPUTE · 정산 보류</text>
+      <text x="110" y="474">CANCELED</text><text x="680" y="474">NOSHOW</text>
+    </g>
+  </svg>
+  </div>
+  <div class="legend">
+    <span><i></i>자동·사용자 전이</span><span><i class="d"></i>예외 전이</span><span><i class="lg main"></i>이 문서의 주 화면 상태</span><span><i class="lg term"></i>끝 상태(정상 흐름은 여기서 끝, 점선 예외만 있음)</span>
+  </div>
+  <p class="scroll-hint">그림은 옆으로 밀어서 볼 수 있어요.</p>
+
+  <h3>전이 표 (개발 기준)</h3>
+  <div class="tw"><table class="t-wide">
+    <thead><tr><th>현재</th><th>이벤트</th><th>다음</th><th>주체</th><th>함께 일어나는 일</th></tr></thead>
+    <tbody>
+      <tr><td>결제대기</td><td>PG 승인 웹훅</td><td>수락대기</td><td>서버</td><td>코치에게 요청 알림, 수락 기한 설정(P-06)</td></tr>
+      <tr><td>결제대기</td><td>10분 경과 / 결제 실패</td><td>만료</td><td>서버</td><td>만료 직전 PG 조회 API로 승인 여부 한 번 더 확인, 쿠폰 잠금 해제</td></tr>
+      <tr><td>만료</td><td>늦은 승인 + 슬롯 비어 있음 + 쿠폰 미사용</td><td>수락대기</td><td>서버</td><td>슬롯·쿠폰을 다시 잡고 정상 진행. 조건이 안 맞으면 상태는 만료 그대로, 자동 전체취소(E-04)</td></tr>
+      <tr><td>수락대기</td><td>코치 수락</td><td>예약확정</td><td>코치</td><td>고객 알림</td></tr>
+      <tr><td>수락대기</td><td>고객 취소 · 코치 거절 · 기한 초과 · 관리자 취소</td><td>취소</td><td>고객·코치·서버·관리자</td><td>전액 환불, 쿠폰 복원(P-05), 슬롯 반환</td></tr>
+      <tr><td>예약확정</td><td>고객·코치·관리자 취소 (시작 전)</td><td>취소</td><td>각 주체</td><td>P-01 판정, 환불 요청, 코치 보상 정산 확정</td></tr>
+      <tr><td>예약확정</td><td>코치 완료 처리 / 종료 24h 뒤</td><td>수업완료</td><td>코치·서버</td><td>정산 예정 등록 (확정은 종료 72h 뒤)</td></tr>
+      <tr><td>예약확정</td><td>코치 노쇼 신고</td><td>노쇼검토</td><td>코치</td><td>정산 보류, 고객 알림, 이의 기한 24h</td></tr>
+      <tr><td>노쇼검토</td><td>24h 이의 없음</td><td>노쇼확정</td><td>서버</td><td>쿠폰 소멸, 정산 확정, 노쇼 횟수 +1</td></tr>
+      <tr><td>노쇼검토</td><td>고객 이의제기</td><td>분쟁검토</td><td>고객</td><td>관리자 검토 큐 등록, Slack 알림</td></tr>
+      <tr><td>수업완료</td><td>고객 수업 미진행 신고 (종료 72h 안, 판정 이력 없음)</td><td>분쟁검토</td><td>고객</td><td>정산 보류(확정 전이면 확정 멈춤)</td></tr>
+      <tr><td>노쇼확정</td><td>관리자 재검토 (30일 안)</td><td>분쟁검토</td><td>관리자</td><td>이미 지급했으면 판정 결과에 따라 차감 예약(P-08)</td></tr>
+      <tr><td>분쟁검토</td><td>관리자 판정</td><td>수업완료 / 노쇼확정 / 취소</td><td>관리자</td><td>판정 메모 필수, 보류 해제, 환불·차감, 양쪽 알림</td></tr>
+    </tbody>
+  </table></div>
+  <p class="help">수업완료·노쇼확정 상태에서는 관리자도 바로 '강제 취소'를 할 수 없고, 분쟁검토를 거쳐야 해요. 정산과 환불 기록이 한 경로로만 남게 하려는 규칙이에요.</p>
+</section>
+
+<!-- ================= 4 ================= -->
+<section class="sec" id="s4">
+  <h2><span class="no">4</span>사용자·관리자 업무 프로세스</h2>
+  <p class="sub">누가, 어떤 순서로, 어디서 갈라지는지 레인별로 그렸어요.</p>
+
+  <h3>흐름 A. 고객이 앱에서 취소하고 환불받기</h3>
+  <div class="diagram" role="img" aria-label="고객 취소 스윔레인: 고객, 서버, PG, 코치, 관리자 레인">
+  <svg viewBox="0 0 1090 500" xmlns="http://www.w3.org/2000/svg" font-family="Pretendard Variable, Pretendard, -apple-system, sans-serif">
+    <defs><marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#4E5968"/></marker></defs>
+    <g fill="#F7F8FA"><rect x="0" y="0" width="1090" height="100"/><rect x="0" y="200" width="1090" height="100"/><rect x="0" y="400" width="1090" height="100"/></g>
+    <g stroke="#E5E8EB"><path d="M0 100H1090M0 200H1090M0 300H1090M0 400H1090M100 0V500"/></g>
+    <g font-size="13" font-weight="700" fill="#191F28" text-anchor="middle">
+      <text x="50" y="54">고객 앱</text><text x="50" y="154">서버</text><text x="50" y="254">PG</text><text x="50" y="354">코치 앱</text><text x="50" y="454">관리자</text>
+    </g>
+    <g fill="none" stroke="#4E5968" stroke-width="1.6" marker-end="url(#ar2)">
+      <path d="M180 76V150H258"/>
+      <path d="M380 150H460V78"/>
+      <path d="M520 50H600V122"/>
+      <path d="M640 150H678"/>
+      <path d="M560 150H500V78" stroke-dasharray="6 5"/>
+      <path d="M740 176V322"/>
+      <path d="M800 150H880V222"/>
+      <path d="M940 244H1020V78"/>
+      <path d="M940 256H1020V422"/>
+    </g>
+    <g font-size="12" fill="#4E5968">
+      <text x="530" y="190" text-anchor="middle">다름 → 새 금액 팝업</text>
+      <text x="659" y="140" text-anchor="middle">같음</text>
+      <text x="1028" y="166">성공</text>
+      <text x="1028" y="340">3회</text><text x="1028" y="356">실패</text>
+    </g>
+    <g fill="#fff" stroke="#4E5968" stroke-width="1.4">
+      <rect x="120" y="24" width="120" height="52" rx="10"/>
+      <rect x="260" y="124" width="120" height="52" rx="10"/>
+      <rect x="400" y="24" width="120" height="52" rx="10"/>
+      <path d="M600 124L640 150L600 176L560 150Z"/>
+      <rect x="680" y="124" width="120" height="52" rx="10" fill="#FFF3EB" stroke="#C9480B"/>
+      <rect x="820" y="224" width="120" height="52" rx="10"/>
+      <rect x="680" y="324" width="120" height="52" rx="10"/>
+      <rect x="960" y="24" width="120" height="52" rx="10"/>
+      <rect x="960" y="424" width="120" height="52" rx="10"/>
+    </g>
+    <g font-size="12" fill="#191F28" text-anchor="middle">
+      <text x="180" y="46" font-weight="600">예약 상세에서</text><text x="180" y="62">취소하기 누름</text>
+      <text x="320" y="146" font-weight="600">환불 미리보기</text><text x="320" y="162">P-01 판정</text>
+      <text x="460" y="46" font-weight="600">사유 선택</text><text x="460" y="62">금액 확인·확정</text>
+      <text x="600" y="148" font-size="11" font-weight="600">금액</text><text x="600" y="162" font-size="11">같나?</text>
+      <text x="740" y="146" font-weight="600">취소 처리</text><text x="740" y="162">슬롯·쿠폰·정산</text>
+      <text x="880" y="246" font-weight="600">부분·전체 취소</text><text x="880" y="262">멱등키 사용</text>
+      <text x="740" y="346" font-weight="600">취소 알림</text><text x="740" y="362">보상 예정액 표시</text>
+      <text x="1020" y="46" font-weight="600">환불 완료</text><text x="1020" y="62">알림톡</text>
+      <text x="1020" y="446" font-weight="600">환불실패 큐</text><text x="1020" y="462">Slack 알림</text>
+    </g>
+  </svg>
+  </div>
+  <p class="scroll-hint">그림은 옆으로 밀어서 볼 수 있어요.</p>
+
+  <h3>흐름 B. 코치 노쇼 신고부터 판정까지</h3>
+  <div class="diagram" role="img" aria-label="노쇼 스윔레인: 코치, 서버, 고객, 관리자 레인">
+  <svg viewBox="0 0 1090 400" xmlns="http://www.w3.org/2000/svg" font-family="Pretendard Variable, Pretendard, -apple-system, sans-serif">
+    <defs><marker id="ar3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#4E5968"/></marker></defs>
+    <g fill="#F7F8FA"><rect x="0" y="0" width="1090" height="100"/><rect x="0" y="200" width="1090" height="100"/></g>
+    <g stroke="#E5E8EB"><path d="M0 100H1090M0 200H1090M0 300H1090M100 0V400"/></g>
+    <g font-size="13" font-weight="700" fill="#191F28" text-anchor="middle">
+      <text x="50" y="54">코치 앱</text><text x="50" y="154">서버</text><text x="50" y="254">고객 앱</text><text x="50" y="354">관리자</text>
+    </g>
+    <g fill="none" stroke="#4E5968" stroke-width="1.6" marker-end="url(#ar3)">
+      <path d="M180 76V150H258"/>
+      <path d="M380 150H460V222"/>
+      <path d="M520 250H600V178"/>
+      <path d="M640 150H678"/>
+      <path d="M600 176V350H678" stroke-dasharray="0"/>
+      <path d="M800 150H818"/>
+      <path d="M800 350H880V178"/>
+      <path d="M940 140H1020V78"/>
+      <path d="M940 160H1020V222"/>
+    </g>
+    <g font-size="12" fill="#4E5968">
+      <text x="659" y="140" text-anchor="middle">아니오</text>
+      <text x="610" y="300">예 (이의제기)</text>
+    </g>
+    <g fill="#fff" stroke="#4E5968" stroke-width="1.4">
+      <rect x="120" y="24" width="120" height="52" rx="10"/>
+      <rect x="260" y="124" width="120" height="52" rx="10"/>
+      <rect x="400" y="224" width="120" height="52" rx="10"/>
+      <path d="M600 124L640 150L600 176L560 150Z"/>
+      <rect x="680" y="124" width="120" height="52" rx="10"/>
+      <rect x="680" y="324" width="120" height="52" rx="10" fill="#FFF3EB" stroke="#C9480B"/>
+      <rect x="820" y="124" width="120" height="52" rx="10"/>
+      <rect x="960" y="24" width="120" height="52" rx="10"/>
+      <rect x="960" y="224" width="120" height="52" rx="10"/>
+    </g>
+    <g font-size="12" fill="#191F28" text-anchor="middle">
+      <text x="180" y="46" font-weight="600">노쇼 신고</text><text x="180" y="62">시작 15분 뒤~</text>
+      <text x="320" y="146" font-weight="600">노쇼검토 전이</text><text x="320" y="162">정산 보류·기한 24h</text>
+      <text x="460" y="246" font-weight="600">알림 받음</text><text x="460" y="262">이의제기(선택)</text>
+      <text x="600" y="148" font-size="11" font-weight="600">기한 안</text><text x="600" y="162" font-size="11">이의?</text>
+      <text x="740" y="146" font-weight="600">노쇼 확정</text><text x="740" y="162">횟수 +1</text>
+      <text x="740" y="346" font-weight="600">분쟁 판정</text><text x="740" y="362">메모 필수</text>
+      <text x="880" y="146" font-weight="600">결과 반영</text><text x="880" y="162">환불·정산·제한</text>
+      <text x="1020" y="46" font-weight="600">결과 알림</text><text x="1020" y="62">정산 예정 갱신</text>
+      <text x="1020" y="246" font-weight="600">결과 알림</text><text x="1020" y="262">제한 안내(해당 시)</text>
+    </g>
+  </svg>
+  </div>
+
+  <h3>흐름 C. 관리자가 CS 요청으로 강제 취소하기</h3>
+  <ol class="admin-steps">
+    <li>상담 기록에서 예약번호로 <a href="#ADM-BK-110">ADM-BK-110 예약 상세</a>를 열어요.</li>
+    <li>귀책을 고르고, 고객 귀책이면 <b>상담 접수 시각</b>과 상담 번호를 넣어요. 미리보기 금액이 자동으로 바뀌어요.</li>
+    <li>금액을 바꿔야 하면 '금액 조정'을 켜고 사유를 써요. 기본값과 다르면 정산관리자 승인 대기로 넘어가요.</li>
+    <li>실행하면 상태·환불·쿠폰·코치 보상이 한 번에 처리되고, 처리 이력에 누가·언제·왜가 남아요.</li>
+    <li>환불이 실패하면 Slack 운영 채널과 환불실패 큐에 올라오고, PG 관리 화면에서 처리한 뒤 '수동 환불 완료'를 눌러요.</li>
+  </ol>
+</section>
+
+<!-- ================= 5 ================= -->
+<section class="sec" id="s5">
+  <h2><span class="no">5</span>화면설계 · 고객 앱</h2>
+  <p class="sub">기준 화면 390×844(iPhone 14/15). 와이어프레임의 동그라미 번호와 오른쪽 디스크립션 번호가 같아요. 예시 시각은 10/30(금) 04:00, 수업은 10/31(토) 10:00이에요(남은 30시간 → 30% 구간).</p>
+
+  <!-- APP-BK-010 -->
+  <article class="sb" id="APP-BK-010">
+    <div class="sb-head">
+      <div><small>화면 ID</small><b class="sid">APP-BK-010</b></div>
+      <div><small>화면명</small><b>예약 상세 (예약확정)</b></div>
+      <div><small>경로</small><b>홈 → 내 예약 → 예약 카드</b></div>
+      <div><small>상태</small><b>수정</b> <span class="chip c-warn">v1.2 변경</span></div>
+    </div>
+    <div class="sb-body">
+      <div class="sb-wire"><div class="ph"><div class="scr">
+        <div class="sbar"><span>9:41</span><span>●●●</span></div>
+        <div class="ab"><span class="bk"></span><span class="t">예약 상세</span></div>
+        <div class="pc">
+          <div style="position:relative"><span class="mk">1</span><span class="wst">예약확정</span> <span class="muted" style="color:#5B6470">예약번호 BK-1031-0042</span></div>
+          <div class="w"><span class="mk">2</span>
+            <div class="tt">1:1 테니스 레슨 · 60분</div>
+            <div class="muted" style="color:#5B6470">박○○ 코치 · 송파구 ○○ 실내코트</div>
+            <div class="tt" style="margin-top:6px">10/31(토) 10:00–11:00</div>
+          </div>
+          <div class="w f"><span class="mk">3</span>
+            <div class="row"><span>수업료</span><span>60,000원</span></div>
+            <div class="row"><span>첫 수업 쿠폰</span><span>−10,000원</span></div>
+            <div class="row sum"><span>결제 (○○카드)</span><span>50,000원</span></div>
+          </div>
+          <div class="w"><span class="mk">4</span>
+            <div class="tt">지금 취소하면 수수료 30%</div>
+            <div class="wbar"><span></span><span class="on"></span><span></span><span></span></div>
+            <div class="wbar-l"><span>0%</span><span><b>30%</b></span><span>50%</span><span>100%</span></div>
+            <div class="muted" style="color:#5B6470;margin-top:6px">10/30(금) 10:00부터 50%로 바뀌어요</div>
+            <div style="margin-top:4px;text-decoration:underline">취소·환불 규정 전체 보기</div>
+          </div>
+        </div>
+        <div class="wcta">
+          <div class="wbtn g">코치와 채팅하기</div>
+          <div class="wbtn t" style="position:relative"><span class="mk">5</span>예약 취소하기</div>
+        </div>
+      </div></div></div>
+      <div class="sb-desc"><ol>
+        <li><span class="n">1</span><div><b>상태 칩</b><ul><li>예약 상태 9개 중 고객용 이름으로 표시: 결제대기는 노출 안 함, 노쇼검토는 '확인 중'</li><li>예약번호는 길게 누르면 복사</li></ul></div></li>
+        <li><span class="n">2</span><div><b>수업 정보</b><ul><li>코치 이름은 성 + ○○ 가림(코치 공개 설정을 따름)</li><li>장소를 누르면 지도 앱 선택 시트</li></ul></div></li>
+        <li><span class="n">3</span><div><b>결제 요약</b><ul><li>쿠폰을 안 썼으면 쿠폰 줄을 숨김</li><li>결제 수단은 카드사 이름 + 끝 4자리 (예: ○○카드 1234)</li></ul></div></li>
+        <li><span class="n">4</span><div><b>취소 기준 안내 · 신규</b><ul><li>P-01 R1~R3에 해당하면 막대 대신 "지금 취소하면 전액 환불"</li><li>현재 구간만 진하게, 다음 구간이 바뀌는 시각을 한 줄로 안내</li><li>화면을 연 채로 구간이 바뀌면 1분 주기로 문구를 새로 그림</li></ul></div></li>
+        <li><span class="n">5</span><div><b>예약 취소하기</b><ul><li>노출: 상태가 수락대기·예약확정이고 수업 시작 전 (<a href="#f-01">F-01</a>)</li><li>수업 시작 후에는 버튼 대신 "수업이 시작돼 앱에서 취소할 수 없어요 · 문의하기"</li><li>누르면 <a href="#APP-BK-020">APP-BK-020</a></li></ul></div></li>
+      </ol>
+      <p class="refs">관련: <a href="#p-01">P-01</a> · <a href="#p-02">P-02</a> · <a href="#f-01">F-01</a> · <a href="#f-02">F-02</a></p></div>
+    </div>
+  </article>
+
+  <!-- APP-BK-020 -->
+  <article class="sb" id="APP-BK-020">
+    <div class="sb-head">
+      <div><small>화면 ID</small><b class="sid">APP-BK-020</b></div>
+      <div><small>화면명</small><b>예약 취소 · 환불 미리보기</b></div>
+      <div><small>경로</small><b>APP-BK-010 → 예약 취소하기</b></div>
+      <div><small>상태</small><b>신규</b> <span class="chip c-warn">v1.2 신규</span></div>
+    </div>
+    <div class="sb-body">
+      <div class="sb-wire"><div class="ph"><div class="scr">
+        <div class="sbar"><span>9:41</span><span>●●●</span></div>
+        <div class="ab"><span class="bk"></span><span class="t">예약 취소</span></div>
+        <div class="pc">
+          <div style="position:relative"><span class="mk">1</span>
+            <div class="tt" style="font-size:13px;font-weight:600;margin-bottom:6px">취소하는 이유를 골라 주세요</div>
+            <span class="wchip on">일정이 바뀌었어요</span><span class="wchip">코치를 바꾸고 싶어요</span><span class="wchip">다른 곳에서 예약했어요</span><span class="wchip">기타</span>
+          </div>
+          <div class="w f"><span class="mk">2</span>
+            <div class="row"><span>결제 금액</span><span>50,000원</span></div>
+            <div class="row"><span>취소 수수료 (30%)</span><span>−15,000원</span></div>
+            <div class="row sum"><span>환불 예정</span><span>35,000원</span></div>
+          </div>
+          <div class="w" style="border-style:dashed"><span class="mk">3</span>
+            <div class="tt" style="font-size:12px">첫 수업 쿠폰 10,000원은 돌려드리지 않아요</div>
+            <div class="muted" style="color:#5B6470">수수료가 있는 취소라서 쿠폰이 사용 처리돼요</div>
+          </div>
+          <div class="w"><span class="mk">4</span>
+            <div class="lb">환불 받는 곳</div>
+            <div>○○카드 1234 · 승인 취소</div>
+            <div class="muted" style="color:#5B6470">카드사에 따라 3~7영업일 걸려요</div>
+          </div>
+          <div style="position:relative;color:#5B6470;font-size:11px"><span class="mk">5</span>'취소하기'를 누른 시각으로 다시 계산해요. 10:00가 지나면 수수료가 50%로 바뀌어요.</div>
+        </div>
+        <div class="wcta">
+          <div class="wbtn"><span class="mk">6</span>35,000원 환불받고 취소하기</div>
+        </div>
+      </div></div></div>
+      <div class="sb-desc"><ol>
+        <li><span class="n">1</span><div><b>취소 사유 (필수, 하나만)</b><ul><li>'기타'를 고르면 입력칸 노출, 10~200자</li><li>'코치를 바꾸고 싶어요'는 운영 통계용. 코치에게는 사유를 보여 주지 않음</li></ul></div></li>
+        <li><span class="n">2</span><div><b>환불 계산 내역</b><ul><li>화면에 들어올 때 서버에서 미리보기를 받아 표시(<a href="#f-03">F-03</a>). 앱이 직접 계산하지 않음</li><li>전액 환불이면 수수료 줄 숨김, "전액 환불돼요"</li><li>미리보기 실패: 금액 자리에 "금액을 불러오지 못했어요 · 다시 불러오기", ⑥ 비활성</li></ul></div></li>
+        <li><span class="n">3</span><div><b>쿠폰 처리 안내</b><ul><li>P-05 결과에 따라 '돌려드려요' / '새로 발급해 드려요(7일)' / '돌려드리지 않아요' 중 하나</li><li>쿠폰을 안 썼으면 숨김</li></ul></div></li>
+        <li><span class="n">4</span><div><b>환불 수단·시점</b><ul><li>부분취소·전체취소 모두 원래 결제 수단으로만 환불</li><li>환불 0원(100% 구간)이면 이 칸 대신 "환불 금액이 없어요"</li></ul></div></li>
+        <li><span class="n">5</span><div><b>기준 시각 안내</b><ul><li>다음 구간까지 6시간 안 남았을 때만 노출(예시는 04:00, 다음 구간 10:00)</li></ul></div></li>
+        <li><span class="n">6</span><div><b>취소 확정 버튼</b><ul><li>버튼 글자에 환불 금액을 넣음. 0원이면 "환불 없이 취소하기"</li><li>사유를 고르기 전에는 비활성</li><li>누르면 로딩, 두 번 눌러도 한 번만 요청(멱등키). 서버 재계산 금액이 다르면 <a href="#APP-BK-021">APP-BK-021</a></li></ul></div></li>
+      </ol>
+      <p class="refs">관련: <a href="#p-05">P-05</a> · <a href="#p-03">P-03</a> · <a href="#f-03">F-03</a> · <a href="#f-04">F-04</a> · <a href="#f-05">F-05</a> · <a href="#e-01">E-01</a> · <a href="#e-06">E-06</a></p></div>
+    </div>
+  </article>
+
+  <!-- APP-BK-021 -->
+  <article class="sb" id="APP-BK-021">
+    <div class="sb-head">
+      <div><small>화면 ID</small><b class="sid">APP-BK-021</b></div>
+      <div><small>화면명</small><b>환불 금액 변경 안내 (팝업)</b></div>
+      <div><small>경로</small><b>APP-BK-020 → 취소하기 → 재계산 불일치</b></div>
+      <div><small>상태</small><b>신규</b> <span class="chip c-warn">v1.2 신규</span></div>
+    </div>
+    <div class="sb-body">
+      <div class="sb-wire"><div class="ph"><div class="scr">
+        <div class="sbar"><span>10:00</span><span>●●●</span></div>
+        <div class="ab"><span class="bk"></span><span class="t">예약 취소</span></div>
+        <div class="pc">
+          <div class="w f" style="height:96px"></div>
+          <div class="w f" style="height:56px"></div>
+          <div class="w f" style="height:64px"></div>
+        </div>
+        <div class="wcta"><div class="wbtn dis">35,000원 환불받고 취소하기</div></div>
+        <div class="dim"><div class="dlg">
+          <div class="tt" style="position:relative"><span class="mk">1</span>환불 금액이 바뀌었어요</div>
+          <div style="color:#5B6470;position:relative"><span class="mk">2</span>10:00가 지나 수수료가 30%에서 50%가 됐어요.</div>
+          <div class="cmp" style="position:relative"><span class="mk">3</span><s>35,000원</s><span>→</span><b>25,000원</b></div>
+          <div class="bt" style="position:relative"><span class="mk">4</span><div class="wbtn g">닫기</div><div class="wbtn">25,000원 받고 취소</div></div>
+        </div></div>
+      </div></div></div>
+      <div class="sb-desc"><ol>
+        <li><span class="n">1</span><div><b>제목</b><ul><li>제목은 고정. 왜 바뀌었는지는 ②에서 설명</li><li>코치·관리자가 먼저 취소한 경우는 이 팝업이 아니라 "이미 취소된 예약이에요" 안내 후 상세 새로고침(<a href="#f-05">F-05</a>)</li></ul></div></li>
+        <li><span class="n">2</span><div><b>바뀐 이유 (서버가 사유 코드로 내려줌)</b><ul><li><code>BAND_CHANGED</code> 구간이 바뀜</li><li><code>STATUS_CHANGED</code> 코치가 방금 수락함 → "코치가 방금 예약을 수락해 취소 규정이 바뀌었어요"</li><li><code>COUPON_EXPIRED</code> 쿠폰 처리만 바뀜 → 금액 비교 대신 쿠폰 문구 비교</li></ul></div></li>
+        <li><span class="n">3</span><div><b>이전 → 새 금액</b><ul><li>이전 금액은 취소선, 새 금액은 굵게</li></ul></div></li>
+        <li><span class="n">4</span><div><b>버튼</b><ul><li>닫기: 팝업만 닫고 APP-BK-020이 새 금액으로 다시 그려짐(사유 선택은 유지)</li><li>오른쪽: 새 견적 ID로 바로 취소 요청. 그 사이 또 바뀌면 이 팝업을 다시 띄움</li></ul></div></li>
+      </ol>
+      <p class="refs">관련: <a href="#f-06">F-06</a> · <a href="#e-06">E-06</a> · <a href="#q-02">Q-02</a></p></div>
+    </div>
+  </article>
+
+  <!-- APP-BK-030 -->
+  <article class="sb" id="APP-BK-030">
+    <div class="sb-head">
+      <div><small>화면 ID</small><b class="sid">APP-BK-030</b></div>
+      <div><small>화면명</small><b>취소 완료 · 환불 진행</b></div>
+      <div><small>경로</small><b>취소 성공 후 / 내 예약 → 취소된 예약</b></div>
+      <div><small>상태</small><b>신규</b> <span class="chip c-warn">v1.2 신규</span></div>
+    </div>
+    <div class="sb-body">
+      <div class="sb-wire"><div class="ph"><div class="scr">
+        <div class="sbar"><span>9:41</span><span>●●●</span></div>
+        <div class="ab"><span class="t" style="margin-right:0">취소 완료</span></div>
+        <div class="pc">
+          <div style="position:relative;text-align:center;padding:8px 0"><span class="mk">1</span>
+            <div class="tt" style="font-size:15px;font-weight:700">예약을 취소했어요</div>
+            <div style="font-size:20px;font-weight:700;margin-top:4px">35,000원</div>
+            <div class="muted" style="color:#5B6470">환불 예정 · ○○카드 1234</div>
+          </div>
+          <div class="w"><span class="mk">2</span>
+            <ul class="wtl">
+              <li><i class="on"></i><div><b>취소 완료</b><div class="muted" style="color:#5B6470">10/30 04:12</div></div></li>
+              <li><i class="on"></i><div><b>카드사에 환불 요청</b><div class="muted" style="color:#5B6470">10/30 04:12</div></div></li>
+              <li><i class="off"></i><div><b>환불 완료</b><div class="muted" style="color:#5B6470">카드사에 따라 3~7영업일</div></div></li>
+            </ul>
+          </div>
+          <div class="w f"><span class="mk">3</span>
+            <div class="row"><span>취소 수수료</span><span>15,000원</span></div>
+            <div class="row"><span>첫 수업 쿠폰</span><span>사용 처리</span></div>
+          </div>
+        </div>
+        <div class="wcta">
+          <div class="wbtn"><span class="mk">4</span>박○○ 코치의 다른 시간 보기</div>
+          <div class="wbtn t">홈으로</div>
+        </div>
+      </div></div></div>
+      <div class="sb-desc"><ol>
+        <li><span class="n">1</span><div><b>결과 요약</b><ul><li>환불 0원이면 "환불 금액 없이 취소했어요"</li><li>이 화면은 뒤로 가기로 APP-BK-020에 돌아가지 않음(스택 정리)</li></ul></div></li>
+        <li><span class="n">2</span><div><b>환불 진행 단계</b><ul><li>환불 상태: 요청 → 완료. '실패'는 고객에게 그대로 보여 주지 않고 '처리 중' 유지(운영이 처리)</li><li>요청 후 3영업일이 지나도 완료가 아니면 "환불이 늦어지고 있어요 · 문의하기" 노출</li></ul></div></li>
+        <li><span class="n">3</span><div><b>처리 내역</b><ul><li>쿠폰 복원 시 "쿠폰함에 돌려드렸어요" + 쿠폰함 이동 링크</li></ul></div></li>
+        <li><span class="n">4</span><div><b>다음 행동</b><ul><li>코치가 활동 중일 때만 노출. 코치 귀책 취소면 "다른 코치 찾아보기"</li></ul></div></li>
+      </ol>
+      <p class="refs">관련: <a href="#f-07">F-07</a> · <a href="#e-07">E-07</a> · <a href="#n-04">N-04</a></p></div>
+    </div>
+  </article>
+
+  <!-- APP-NS-010 -->
+  <article class="sb" id="APP-NS-010">
+    <div class="sb-head">
+      <div><small>화면 ID</small><b class="sid">APP-NS-010</b></div>
+      <div><small>화면명</small><b>노쇼 신고 확인 · 이의제기</b></div>
+      <div><small>경로</small><b>노쇼 신고 알림 → 예약 상세</b></div>
+      <div><small>상태</small><b>신규</b> <span class="chip c-warn">v1.2 신규</span></div>
+    </div>
+    <div class="sb-body">
+      <div class="sb-wire"><div class="ph"><div class="scr">
+        <div class="sbar"><span>9:41</span><span>●●●</span></div>
+        <div class="ab"><span class="bk"></span><span class="t">수업 확인 요청</span></div>
+        <div class="pc">
+          <div class="w f"><span class="mk">1</span>
+            <div class="tt">코치가 '수업에 오지 않았어요'로 알렸어요</div>
+            <div class="muted" style="color:#5B6470">10/31(토) 10:00 테니스 레슨</div>
+            <div style="margin-top:6px;font-weight:600">11/1(일) 10:20까지 이의제기할 수 있어요</div>
+          </div>
+          <div style="position:relative;color:#5B6470;font-size:11px"><span class="mk">2</span>이의제기가 없으면 노쇼로 확정되고 환불이 없어요. 90일 안에 2번 확정되면 30일 동안 예약할 수 없어요.</div>
+          <div style="position:relative"><span class="mk">3</span>
+            <div style="font-weight:600;margin-bottom:6px">어떤 상황이었나요?</div>
+            <span class="wchip on">제시간에 갔어요</span><span class="wchip">코치와 시간을 바꿨어요</span><span class="wchip">기타</span>
+            <div class="wta">자세히 적어 주세요 (10자 이상)</div>
+          </div>
+          <div style="position:relative"><span class="mk">4</span>
+            <div class="lb" style="font-size:11px;color:#5B6470;margin-bottom:4px">사진 (선택, 3장까지)</div>
+            <div class="wadd"><span>+</span></div>
+          </div>
+          <div style="position:relative;font-size:11px"><span class="mk">5</span>☐ 확인을 위해 이 예약의 채팅 기록을 운영팀이 보는 데 동의해요</div>
+        </div>
+        <div class="wcta">
+          <div class="wbtn"><span class="mk">6</span>이의제기 보내기</div>
+          <div class="hint">보내면 운영팀이 확인하고 결과를 알려드려요</div>
+        </div>
+      </div></div></div>
+      <div class="sb-desc"><ol>
+        <li><span class="n">1</span><div><b>신고 내용과 기한</b><ul><li>기한 = 신고 알림 발송 + 24시간. 12시간 안 남으면 남은 시간 표시</li><li>기한이 지나면 이 화면은 읽기 전용, "기한이 지났어요 · 문의하기"</li></ul></div></li>
+        <li><span class="n">2</span><div><b>결과 안내</b><ul><li>고객의 최근 90일 노쇼 횟수가 1회면 "이번이 확정되면 30일 동안 예약할 수 없어요"로 바꿔 강조</li></ul></div></li>
+        <li><span class="n">3</span><div><b>상황 선택 + 설명 (필수)</b><ul><li>설명 10~500자</li></ul></div></li>
+        <li><span class="n">4</span><div><b>사진 첨부 (선택)</b><ul><li>장당 10MB, JPG·PNG·HEIC. 위치 정보(EXIF)는 업로드 때 지움</li></ul></div></li>
+        <li><span class="n">5</span><div><b>채팅 기록 열람 동의 (필수)</b><ul><li>동의 이력(시각·문구 버전) 저장</li></ul></div></li>
+        <li><span class="n">6</span><div><b>보내기</b><ul><li>상태 노쇼검토 → 분쟁검토(<a href="#f-08">F-08</a>), 관리자 큐 등록</li><li>보낸 뒤 이 화면은 "운영팀이 확인 중이에요" 상태로 바뀜</li></ul></div></li>
+      </ol>
+      <p class="refs">관련: <a href="#p-07">P-07</a> · <a href="#f-08">F-08</a> · <a href="#n-06">N-06</a></p></div>
+    </div>
+  </article>
+
+  <!-- APP-CP-010 -->
+  <article class="sb" id="APP-CP-010">
+    <div class="sb-head">
+      <div><small>화면 ID</small><b class="sid">APP-CP-010</b></div>
+      <div><small>화면명</small><b>쿠폰함 (복원·대체 발급 표시)</b></div>
+      <div><small>경로</small><b>마이 → 쿠폰함</b></div>
+      <div><small>상태</small><b>수정</b> <span class="chip c-warn">v1.2 변경</span></div>
+    </div>
+    <div class="sb-body">
+      <div class="sb-wire"><div class="ph"><div class="scr">
+        <div class="sbar"><span>9:41</span><span>●●●</span></div>
+        <div class="ab"><span class="bk"></span><span class="t">쿠폰함</span></div>
+        <div class="wtabs" style="position:relative"><span class="on">사용 가능 2</span><span>사용·만료</span></div>
+        <div class="pc">
+          <div class="cpn"><span class="mk">1</span>
+            <div><div class="amt">8,000원</div><div>가을 레슨 쿠폰</div></div><span class="tag">복원됨</span>
+            <div class="sm">11/30까지 · 10/25 취소로 돌려드린 쿠폰이에요</div>
+          </div>
+          <div class="cpn"><span class="mk">2</span>
+            <div><div class="amt">5,000원</div><div>주말 레슨 쿠폰</div></div><span class="tag">다시 발급</span>
+            <div class="sm">11/6까지 (7일) · 원래 기한이 지나 새로 드렸어요</div>
+          </div>
+          <div class="w f" style="text-align:center;color:#5B6470"><span class="mk">3</span>쿠폰은 결제 화면에서 고를 수 있어요</div>
+        </div>
+      </div></div></div>
+      <div class="sb-desc"><ol>
+        <li><span class="n">1</span><div><b>복원된 쿠폰</b><ul><li>라벨 '복원됨'은 복원 후 7일 동안만 표시</li><li>만료일은 원래 만료일 그대로</li></ul></div></li>
+        <li><span class="n">2</span><div><b>대체 발급 쿠폰</b><ul><li>원 쿠폰이 만료됐거나 24시간 안 남았을 때 새로 발급(P-05)</li><li>원 쿠폰은 '사용·만료' 탭에 '대체 발급됨'으로 남김</li></ul></div></li>
+        <li><span class="n">3</span><div><b>안내·빈 화면</b><ul><li>쿠폰이 없으면 "지금 쓸 수 있는 쿠폰이 없어요"만 표시(다른 행동 버튼 없음)</li><li>불러오는 중: 쿠폰 카드 모양 스켈레톤 2개</li></ul></div></li>
+      </ol>
+      <p class="refs">관련: <a href="#p-05">P-05</a> · <a href="#f-09">F-09</a> · <a href="#e-09">E-09</a></p></div>
+    </div>
+  </article>
+</section>
+
+<!-- ================= 6 ================= -->
+<section class="sec" id="s6">
+  <h2><span class="no">6</span>화면설계 · 관리자</h2>
+  <p class="sub">기준 화면 1440×900 웹. 권한: 예약관리(조회·강제 취소), 정산관리자(금액 조정 승인), 분쟁담당(판정).</p>
+
+  <!-- ADM-BK-110 -->
+  <article class="sb adm" id="ADM-BK-110">
+    <div class="sb-head">
+      <div><small>화면 ID</small><b class="sid">ADM-BK-110</b></div>
+      <div><small>화면명</small><b>예약 상세 · 강제 취소</b></div>
+      <div><small>경로</small><b>예약 관리 → 목록 → 예약번호</b></div>
+      <div><small>상태</small><b>수정</b> <span class="chip c-warn">v1.2 변경</span></div>
+    </div>
+    <p class="scroll-hint adm-hint">관리자 화면은 옆으로 밀어서 볼 수 있어요.</p>
+    <div class="sb-body">
+      <div class="sb-wire"><div class="aw">
+        <div class="aw-nav"><div class="logo">가람레슨 관리자</div><div>대시보드</div><div class="on">예약 관리</div><div>분쟁·노쇼</div><div>정산</div><div>쿠폰</div><div>회원·코치</div></div>
+        <div class="aw-main">
+          <div class="aw-top"><span class="tt">BK-1031-0042</span><span class="wst">예약확정</span><span class="sp"></span><span class="wbtn sm g">고객에게 메시지</span></div>
+          <div class="aw-grid">
+            <div>
+              <div class="w" style="margin-bottom:12px"><span class="mk in">1</span>
+                <p class="wh">예약 정보</p>
+                <dl class="kv">
+                  <dt>고객</dt><dd>김○○ · 010-****-1234 · 노쇼 0회(90일)</dd>
+                  <dt>코치</dt><dd>박○○ · 취소 0회(30일)</dd>
+                  <dt>수업</dt><dd>10/31(토) 10:00–11:00 · 남은 29시간 50분</dd>
+                  <dt>결제</dt><dd>정가 60,000 · 쿠폰 10,000 · ○○카드 50,000</dd>
+                  <dt>정산</dt><dd>정산 예정 51,000 (미확정)</dd>
+                </dl>
+              </div>
+              <div class="w"><span class="mk in">7</span>
+                <p class="wh">처리 이력</p>
+                <table class="atbl"><thead><tr><th>시각</th><th>처리자</th><th>내용</th></tr></thead><tbody>
+                  <tr><td>10/27 14:03</td><td>코치 박○○</td><td>수락 → 예약확정</td></tr>
+                  <tr><td>10/27 13:20</td><td>시스템</td><td>결제 승인 50,000 → 수락대기</td></tr>
+                  <tr><td>10/27 13:19</td><td>고객 김○○</td><td>결제대기 (쿠폰 잠금)</td></tr>
+                </tbody></table>
+              </div>
+            </div>
+            <div class="w">
+              <p class="wh">강제 취소</p>
+              <div style="position:relative;margin-bottom:10px"><span class="mk in">2</span>
+                <div class="lb" style="font-size:11px;color:#5B6470;margin-bottom:4px">귀책 (필수)</div>
+                <div class="wr"><span class="wrad on"><i></i>고객</span><span class="wrad"><i></i>코치</span><span class="wrad"><i></i>불가항력</span><span class="wrad"><i></i>플랫폼</span></div>
+              </div>
+              <div style="position:relative;display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px"><span class="mk in">3</span>
+                <div><div style="font-size:11px;color:#5B6470;margin-bottom:4px">기준 시각 (상담 접수)</div><div class="win">2026-10-30 03:55</div></div>
+                <div><div style="font-size:11px;color:#5B6470;margin-bottom:4px">상담 번호</div><div class="win">CS-48213</div></div>
+              </div>
+              <div class="w f" style="margin-bottom:10px"><span class="mk in">4</span>
+                <div class="row"><span>판정</span><span>P-02 · 72h 미만 24h 이상 · 30%</span></div>
+                <div class="row"><span>고객 환불</span><span>35,000 (부분취소)</span></div>
+                <div class="row"><span>쿠폰</span><span>소멸</span></div>
+                <div class="row"><span>코치 보상</span><span>15,300</span></div>
+              </div>
+              <div style="position:relative;margin-bottom:10px"><span class="mk in">5</span>
+                <div><span class="wtog"></span> 금액 조정</div>
+                <div class="win ph2" style="margin-top:6px">조정 사유 (켜면 필수)</div>
+              </div>
+              <div style="position:relative;margin-bottom:12px"><span class="mk in">6</span>
+                <div><span class="wtog on"></span> 고객 알림톡 &nbsp; <span class="wtog on"></span> 코치 푸시</div>
+              </div>
+              <div class="wbtn" style="height:38px;font-size:12px">강제 취소 실행</div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div class="sb-desc"><ol>
+        <li><span class="n">1</span><div><b>예약 정보</b><ul><li>전화번호는 가운데 가림. '보기'를 누르면 열람 사유 입력 후 노출, 열람 이력 저장</li><li>남은 시간은 서버 시각 기준, 1분마다 갱신</li></ul></div></li>
+        <li><span class="n">2</span><div><b>귀책 선택 (필수)</b><ul><li>고르기 전에는 미리보기·실행 버튼 비활성</li><li>코치·불가항력·플랫폼: 전액 + 쿠폰 복원(P-04)</li></ul></div></li>
+        <li><span class="n">3</span><div><b>기준 시각 · 상담 번호</b><ul><li>고객 귀책일 때만 노출, 둘 다 필수</li><li>기준 시각 범위: 예약 생성 시각 ~ 현재. 미래 불가(<a href="#q-04">Q-04</a>)</li></ul></div></li>
+        <li><span class="n">4</span><div><b>자동 계산 미리보기</b><ul><li>앱과 같은 API 사용(<a href="#f-03">F-03</a>), 판정 근거(규칙 ID) 함께 표시</li></ul></div></li>
+        <li><span class="n">5</span><div><b>금액 조정</b><ul><li>환불 범위 0 ~ 실결제액. 코치 보상은 따로 입력</li><li>기본값과 다르면 실행 대신 '승인 요청'으로 바뀌고, 정산관리자가 승인해야 처리(<a href="#f-11">F-11</a>)</li></ul></div></li>
+        <li><span class="n">6</span><div><b>알림 발송</b><ul><li>기본 켜짐. 끄면 사유 입력(예: 전화로 이미 안내)</li></ul></div></li>
+        <li><span class="n">7</span><div><b>처리 이력 (감사 로그)</b><ul><li>상태 전이·금액·쿠폰·알림·열람을 시간 역순으로. 수정·삭제 불가</li><li>수업완료·노쇼확정 상태에서는 강제 취소 패널 대신 '분쟁 열기' 버튼</li></ul></div></li>
+      </ol>
+      <p class="refs">관련: <a href="#p-04">P-04</a> · <a href="#f-10">F-10</a> · <a href="#f-11">F-11</a> · <a href="#e-08">E-08</a> · <a href="#e-11">E-11</a></p></div>
+    </div>
+  </article>
+
+  <!-- ADM-DS-210 -->
+  <article class="sb adm" id="ADM-DS-210">
+    <div class="sb-head">
+      <div><small>화면 ID</small><b class="sid">ADM-DS-210</b></div>
+      <div><small>화면명</small><b>분쟁·노쇼 검토</b></div>
+      <div><small>경로</small><b>분쟁·노쇼 → 검토 대기</b></div>
+      <div><small>상태</small><b>신규</b> <span class="chip c-warn">v1.2 신규</span></div>
+    </div>
+    <p class="scroll-hint adm-hint">관리자 화면은 옆으로 밀어서 볼 수 있어요.</p>
+    <div class="sb-body">
+      <div class="sb-wire"><div class="aw">
+        <div class="aw-nav"><div class="logo">가람레슨 관리자</div><div>대시보드</div><div>예약 관리</div><div class="on">분쟁·노쇼</div><div>정산</div><div>쿠폰</div><div>회원·코치</div></div>
+        <div class="aw-main">
+          <div class="aw-top"><span class="tt">분쟁·노쇼 검토</span><span class="sp"></span><div class="win ph2" style="width:200px">예약번호·이름 검색</div></div>
+          <div class="fl" style="position:relative"><span class="mk in" style="right:auto;left:-14px">1</span><span class="wchip on">전체 7</span><span class="wchip">노쇼 이의제기 3</span><span class="wchip">수업 미진행 신고 2</span><span class="wchip">재검토 1</span><span class="wchip">판정 기한 지남 1</span></div>
+          <div class="aw-grid" style="grid-template-columns:minmax(0,1.1fr) minmax(0,1fr)">
+            <div class="w" style="padding:0"><span class="mk in">2</span>
+              <table class="atbl"><thead><tr><th>접수</th><th>유형</th><th>수업일</th><th class="r">남은 판정 시간</th><th class="r">보류 금액</th></tr></thead><tbody>
+                <tr class="sel"><td>DS-0318</td><td>노쇼 이의제기</td><td>10/24</td><td class="r">31시간</td><td class="r">51,000</td></tr>
+                <tr><td>DS-0317</td><td>수업 미진행</td><td>10/23</td><td class="r">22시간</td><td class="r">42,500</td></tr>
+                <tr><td>DS-0315</td><td>노쇼 이의제기</td><td>10/22</td><td class="r">지남 3시간</td><td class="r">51,000</td></tr>
+                <tr><td>DS-0312</td><td>재검토</td><td>10/12</td><td class="r">40시간</td><td class="r">차감 예정</td></tr>
+              </tbody></table>
+            </div>
+            <div class="w">
+              <div style="position:relative;margin-bottom:10px"><span class="mk in">3</span>
+                <p class="wh">양쪽 주장</p>
+                <div class="w f" style="margin-bottom:6px"><b>코치</b> · 10:20 신고 "20분 기다렸는데 안 오셨어요"</div>
+                <div class="w f"><b>고객</b> · "제시간에 갔어요" 사진 1장</div>
+              </div>
+              <div style="position:relative;margin-bottom:10px"><span class="mk in">4</span>
+                <p class="wh">근거 자료</p>
+                <div class="wr"><span class="wrad">채팅 기록 (동의함)</span><span class="wrad">사진 1장</span><span class="wrad">두 사람의 이전 분쟁 0건</span></div>
+              </div>
+              <div style="position:relative;margin-bottom:10px"><span class="mk in">5</span>
+                <p class="wh">판정</p>
+                <div class="wr"><span class="wrad on"><i></i>수업완료</span><span class="wrad"><i></i>노쇼확정</span><span class="wrad"><i></i>취소 (귀책 선택)</span></div>
+                <div class="win ph2" style="margin-top:6px">판정 메모 (필수, 양쪽 알림에 요약이 들어가요)</div>
+              </div>
+              <div class="w f" style="margin-bottom:10px"><span class="mk in">6</span>
+                <div class="row"><span>고객 환불</span><span>0원</span></div>
+                <div class="row"><span>코치 정산</span><span>51,000 보류 해제</span></div>
+                <div class="row"><span>고객 노쇼 횟수</span><span>변화 없음</span></div>
+              </div>
+              <div class="wbtn" style="height:38px;font-size:12px">판정 저장</div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div class="sb-desc"><ol>
+        <li><span class="n">1</span><div><b>상태 필터 칩</b><ul><li>건수 같이 표시. '판정 기한 지남'은 접수 후 48시간(제안, <a href="#d-03">D-03</a>) 지난 건</li></ul></div></li>
+        <li><span class="n">2</span><div><b>검토 목록</b><ul><li>남은 판정 시간이 적은 순. 지난 건은 맨 위, 글자 '지남'</li><li>보류 금액 = 이 예약 때문에 멈춘 코치 정산액. 이미 지급한 건은 '차감 예정'</li><li>빈 화면: "검토할 건이 없어요"</li></ul></div></li>
+        <li><span class="n">3</span><div><b>양쪽 주장</b><ul><li>신고·이의 시각과 원문 그대로. 관리자가 수정할 수 없음</li></ul></div></li>
+        <li><span class="n">4</span><div><b>근거 자료</b><ul><li>채팅 기록은 고객 동의가 있을 때만 열림. 열람은 처리 이력에 남음</li></ul></div></li>
+        <li><span class="n">5</span><div><b>판정 (3개 중 하나)</b><ul><li>취소를 고르면 귀책 선택이 나오고, P-04 기준으로 환불·쿠폰·보상 계산</li><li>메모 10자 이상 필수</li></ul></div></li>
+        <li><span class="n">6</span><div><b>판정 결과 미리보기</b><ul><li>저장하면 상태 전이 + 정산 보류 해제 + 환불·차감 + 양쪽 알림이 한 번에(<a href="#f-12">F-12</a>)</li><li>저장 후 24시간 안에는 같은 담당자가 한 번 되돌릴 수 있음. 환불이 이미 나갔으면 되돌리기 불가</li></ul></div></li>
+      </ol>
+      <p class="refs">관련: <a href="#p-07">P-07</a> · <a href="#p-08">P-08</a> · <a href="#f-12">F-12</a> · <a href="#f-13">F-13</a></p></div>
+    </div>
+  </article>
+</section>
+
+<!-- ================= 7 ================= -->
+<section class="sec" id="s7">
+  <h2><span class="no">7</span>기능 명세서</h2>
+  <p class="sub">화면 ID와 정책 ID로 서로 찾아갈 수 있어요. API 이름은 예시예요(실제는 개발팀 명세를 따라요).</p>
+  <div class="tw"><table class="t-wide t-xl">
+    <thead><tr><th>ID</th><th>화면</th><th>기능</th><th>조건</th><th>결과</th><th>예외</th></tr></thead>
+    <tbody>
+      <tr id="f-01"><td class="id">F-01</td><td class="nw">APP-BK-010</td><td>취소 버튼 노출</td><td>상태 수락대기·예약확정, 현재 &lt; 수업 시작</td><td>'예약 취소하기' 노출, 누르면 APP-BK-020</td><td>시작 후: 버튼 대신 문의 안내</td></tr>
+      <tr id="f-02"><td class="id">F-02</td><td class="nw">APP-BK-010</td><td>취소 기준 안내</td><td>예약확정 + P-01 R1~R3 해당 없음</td><td>현재 구간·다음 구간 시각 표시, 1분마다 갱신</td><td>R1~R3 해당: "지금 취소하면 전액 환불"</td></tr>
+      <tr id="f-03"><td class="id">F-03</td><td class="nw">APP-BK-020<br>ADM-BK-110</td><td>환불 미리보기 조회<br><code>GET /bookings/{id}/cancel-quote</code></td><td>화면 진입, 관리자 귀책·기준 시각 변경 시</td><td>견적 ID, 판정 규칙, 수수료, 환불액, 쿠폰 처리, 코치 보상 반환. 견적 유효 5분</td><td>실패: 재시도 버튼, 확정 버튼 비활성</td></tr>
+      <tr id="f-04"><td class="id">F-04</td><td class="nw">APP-BK-020</td><td>취소 사유 선택</td><td>칩 4개 중 하나 필수</td><td>확정 버튼 활성</td><td>'기타'인데 10자 미만: "10자 이상 적어 주세요"</td></tr>
+      <tr id="f-05"><td class="id">F-05</td><td class="nw">APP-BK-020</td><td>취소 확정<br><code>POST /bookings/{id}/cancel</code></td><td>견적 ID + 멱등키 전송. 서버가 누른 시각으로 재계산</td><td>재계산 = 견적: 취소 처리 → APP-BK-030</td><td>다르면 409 + 새 견적 → APP-BK-021<br>이미 취소됨: 안내 후 상세 새로고침</td></tr>
+      <tr id="f-06"><td class="id">F-06</td><td class="nw">APP-BK-021</td><td>금액 변경 안내</td><td>F-05가 409 반환</td><td>이전·새 금액과 사유 표시, 새 견적으로 재요청</td><td>재요청 때 또 다르면 팝업 다시</td></tr>
+      <tr id="f-07"><td class="id">F-07</td><td class="nw">APP-BK-030</td><td>환불 진행 표시</td><td>환불 상태 조회</td><td>요청·완료 단계 표시</td><td>실패는 '처리 중'으로 표시, 3영업일 넘으면 문의 버튼</td></tr>
+      <tr id="f-08"><td class="id">F-08</td><td class="nw">APP-NS-010</td><td>이의제기 제출</td><td>노쇼검토 상태, 기한 안, 동의 체크</td><td>분쟁검토 전이, 관리자 큐 + Slack</td><td>기한 지남: 읽기 전용<br>사진 업로드 실패: 사진 빼고 제출할지 묻기</td></tr>
+      <tr id="f-09"><td class="id">F-09</td><td class="nw">APP-CP-010</td><td>복원·대체 발급 표시</td><td>쿠폰 이력에 복원·대체 발급 있음</td><td>라벨과 사유 문구 표시(복원 후 7일)</td><td>—</td></tr>
+      <tr id="f-10"><td class="id">F-10</td><td class="nw">ADM-BK-110</td><td>강제 취소</td><td>권한 예약관리 이상, 상태 수락대기·예약확정, 귀책 선택</td><td>취소 전이, 환불·쿠폰·보상 처리, 감사 로그</td><td>수업완료·노쇼확정: '분쟁 열기'만<br>고객 귀책인데 기준 시각·상담 번호 없음: 실행 불가</td></tr>
+      <tr id="f-11"><td class="id">F-11</td><td class="nw">ADM-BK-110</td><td>금액 조정 승인</td><td>조정 금액 ≠ 기본값</td><td>승인 대기 → 정산관리자 승인 시 실행</td><td>요청자 본인은 승인 불가. 24시간 미승인 또는 그 사이 수업 시작 시각이 지나면 자동 반려</td></tr>
+      <tr id="f-12"><td class="id">F-12</td><td class="nw">ADM-DS-210</td><td>분쟁 판정</td><td>권한 분쟁담당, 메모 10자 이상</td><td>수업완료 / 노쇼확정 / 취소 전이, 보류 해제, 환불·차감, 양쪽 알림</td><td>판정 중 고객이 탈퇴 신청: 분쟁이 끝날 때까지 탈퇴 불가(E-10)</td></tr>
+      <tr id="f-13"><td class="id">F-13</td><td class="nw">서버 배치</td><td>코치 미수락 자동 취소</td><td>수락 기한 도래(P-06), 상태 수락대기</td><td>취소(코치 귀책), 전액·쿠폰 복원, 양쪽 알림</td><td>기한과 수락이 동시: 먼저 커밋된 쪽 적용</td></tr>
+      <tr id="f-14"><td class="id">F-14</td><td class="nw">서버 배치</td><td>자동 수업완료</td><td>종료 24h 경과, 노쇼검토·분쟁 없음</td><td>수업완료, 정산 예정 등록</td><td>—</td></tr>
+      <tr id="f-15"><td class="id">F-15</td><td class="nw">서버</td><td>PG 웹훅 처리</td><td>승인·취소 웹훅 수신, 서명 검증</td><td>결제대기 → 수락대기, 환불 상태 갱신</td><td>같은 주문 두 번째 승인: 자동 전체취소(E-05)</td></tr>
+    </tbody>
+  </table></div>
+  <p class="scroll-hint">표는 옆으로 밀어서 볼 수 있어요.</p>
+</section>
+
+<!-- ================= 8 ================= -->
+<section class="sec" id="s8">
+  <h2><span class="no">8</span>예외처리 시나리오</h2>
+  <p class="sub">개발·QA가 테스트 케이스로 바로 옮길 수 있게, 감지 방법과 시스템 처리, 사용자에게 보이는 것을 나눠 적었어요.</p>
+  <div class="tw"><table class="t-wide t-xl">
+    <thead><tr><th>ID</th><th>상황</th><th>감지</th><th>시스템 처리</th><th>사용자에게 보이는 것</th></tr></thead>
+    <tbody>
+      <tr id="e-01"><td class="id">E-01</td><td>취소 요청 중 네트워크 끊김</td><td>응답 시간 초과(10초)</td><td>서버는 멱등키로 한 번만 처리. 앱은 다시 연결되면 같은 멱등키로 상태 조회</td><td>"취소가 됐는지 확인하고 있어요" → 결과에 따라 APP-BK-030 또는 원래 화면</td></tr>
+      <tr id="e-02"><td class="id">E-02</td><td>결제 성공 직후 앱 종료</td><td>PG 웹훅은 왔는데 앱 콜백 없음</td><td>웹훅 기준으로 수락대기 전이(앱 콜백을 기다리지 않음)</td><td>푸시 "예약 요청을 보냈어요". 앱을 다시 열면 홈 위에 같은 안내</td></tr>
+      <tr id="e-03"><td class="id">E-03</td><td>같은 시간 동시 예약</td><td>슬롯 유일 제약 위반</td><td>먼저 결제대기를 만든 사람만 진행</td><td>나중 사람: "방금 다른 분이 이 시간을 예약 중이에요. 10분 안에 결제가 안 되면 다시 열려요" + 다른 시간 보기</td></tr>
+      <tr id="e-04"><td class="id">E-04</td><td>결제대기 만료 뒤 늦은 승인</td><td>만료 상태 예약에 승인 웹훅</td><td>슬롯이 비어 있고 쓴 쿠폰이 아직 미사용이면 다시 잡고 수락대기. 슬롯이 찼거나 그 쿠폰을 다른 예약에 이미 썼으면 자동 전체취소</td><td>자동 취소 때: 알림톡 "결제가 늦게 확인돼 자동으로 취소했어요"</td></tr>
+      <tr id="e-05"><td class="id">E-05</td><td>중복 결제 (두 번 승인)</td><td>같은 주문번호 두 번째 승인</td><td>두 번째 승인을 1분 안에 자동 전체취소, 운영 Slack 기록</td><td>"같은 결제가 두 번 돼서 하나를 바로 취소했어요"</td></tr>
+      <tr id="e-06"><td class="id">E-06</td><td>미리보기와 확정 사이 금액이 바뀜 (구간 경계를 넘김, 코치가 방금 수락)</td><td>F-05 재계산 ≠ 견적</td><td>취소하지 않고 409 + 새 견적</td><td>APP-BK-021 팝업. 고객이 새 금액에 동의해야 처리</td></tr>
+      <tr id="e-07"><td class="id">E-07</td><td>PG 부분취소 실패</td><td>PG 응답 실패·시간 초과</td><td>예약 상태는 취소 유지, 환불만 '실패'. 10분 간격 3회 재시도 → 환불실패 큐 + Slack</td><td>고객에게는 '처리 중'. 3영업일 넘으면 문의 버튼</td></tr>
+      <tr id="e-08"><td class="id">E-08</td><td>정산 지급 후 분쟁 판정으로 환불</td><td>판정 시 지급 완료 플래그</td><td>다음 정산에서 차감. 4주 안에 다 못 빼면 수동 처리 목록</td><td>코치 앱 정산 내역에 "차감 예정 −51,000 (DS-0312)"</td></tr>
+      <tr id="e-09"><td class="id">E-09</td><td>복원할 쿠폰이 이미 만료</td><td>복원 시점 만료일 비교</td><td>같은 조건 7일 쿠폰 새로 발급(P-05)</td><td>쿠폰함 '다시 발급' 라벨</td></tr>
+      <tr id="e-10"><td class="id">E-10</td><td>탈퇴·활동 정지 때 남은 예약</td><td>탈퇴 신청, 코치 상태 변경 이벤트</td><td>고객·코치 모두 진행 중 예약·노쇼검토·분쟁이 있으면 탈퇴를 막고 남은 건을 보여 줌. 코치 활동 정지는 남은 예약을 코치 귀책으로 일괄 취소</td><td>고객: "코치 사정으로 취소됐어요. 전액 환불하고 쿠폰도 돌려드렸어요"</td></tr>
+      <tr id="e-11"><td class="id">E-11</td><td>고객이 앱 대신 전화로 취소 요청</td><td>CS 상담 기록</td><td>관리자가 상담 접수 시각을 기준 시각으로 넣어 고객 귀책 취소(P-04)</td><td>통화 시점 기준 금액으로 알림톡 발송</td></tr>
+    </tbody>
+  </table></div>
+  <p class="scroll-hint">표는 옆으로 밀어서 볼 수 있어요.</p>
+</section>
+
+<!-- ================= 9 ================= -->
+<section class="sec" id="s9">
+  <h2><span class="no">9</span>알림 정의</h2>
+  <p class="sub">알림톡은 템플릿 검수가 필요해서 문구를 미리 정해 둬요. 야간(21시~8시) 광고성 알림은 없고, 아래는 모두 거래 정보 알림이에요.</p>
+  <div class="tw"><table class="t-wide">
+    <thead><tr><th>ID</th><th>이벤트</th><th>받는 사람</th><th>채널</th><th>문구 (요약)</th></tr></thead>
+    <tbody>
+      <tr id="n-01"><td class="id">N-01</td><td>예약 요청 접수</td><td>코치</td><td>푸시</td><td>"10/31(토) 10:00 레슨 요청이 왔어요. 10/28 01:20까지 수락해 주세요"</td></tr>
+      <tr id="n-02"><td class="id">N-02</td><td>수락·예약확정</td><td>고객</td><td>푸시 + 알림톡</td><td>"박○○ 코치가 예약을 수락했어요" + 취소 규정 요약</td></tr>
+      <tr id="n-03"><td class="id">N-03</td><td>미수락 자동 취소 · 코치 취소</td><td>고객</td><td>푸시 + 알림톡</td><td>"코치 사정으로 취소됐어요. 전액 환불, 쿠폰 복원"</td></tr>
+      <tr id="n-04"><td class="id">N-04</td><td>고객 취소 완료</td><td>고객 / 코치</td><td>알림톡 / 푸시</td><td>고객: 환불 예정액·수수료 / 코치: "취소됐어요 · 보상 예정 15,300원"</td></tr>
+      <tr id="n-05"><td class="id">N-05</td><td>환불 완료</td><td>고객</td><td>알림톡</td><td>"35,000원 환불이 끝났어요"</td></tr>
+      <tr id="n-06"><td class="id">N-06</td><td>노쇼 신고</td><td>고객</td><td>푸시 + 알림톡</td><td>"수업 확인 요청이 왔어요. 11/1(일) 10:20까지 확인해 주세요"</td></tr>
+      <tr id="n-07"><td class="id">N-07</td><td>판정 결과</td><td>고객 / 코치</td><td>푸시 + 알림톡</td><td>판정 결과 + 메모 요약 + 금액 변화</td></tr>
+      <tr id="n-08"><td class="id">N-08</td><td>환불 실패 · 분쟁 접수 · 판정 기한 지남</td><td>운영팀</td><td>Slack 채널</td><td>예약번호, 금액, 관리자 화면 링크</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ================= 10 ================= -->
+<section class="sec" id="s10">
+  <h2><span class="no">10</span>결정 필요 사항</h2>
+  <p class="sub">기획 쪽 제안안을 적었어요. 정해지면 이 표에서 지우고 정책 표에 반영해요.</p>
+  <div class="tw"><table class="t-mid">
+    <thead><tr><th>ID</th><th>질문</th><th>제안안</th><th>다른 안</th><th>결정할 분</th></tr></thead>
+    <tbody>
+      <tr id="d-01"><td class="id">D-01</td><td>취소·노쇼 때 코치 보상의 기준 금액</td><td>정가 기준 (쿠폰은 플랫폼 부담이라 코치 몫을 줄이지 않음)</td><td>실결제액 기준: 플랫폼 손실은 없지만 쿠폰이 큰 예약일수록 코치 보상이 줄어 코치 불만 가능</td><td>사업·정산</td></tr>
+      <tr id="d-02"><td class="id">D-02</td><td>코치·플랫폼 귀책 취소 때 고객 보상 쿠폰</td><td>플랫폼 귀책만 3,000원 쿠폰(예시)</td><td>코치 귀책도 지급 + 코치 정산에서 차감</td><td>운영</td></tr>
+      <tr id="d-03"><td class="id">D-03</td><td>분쟁 판정 목표 시간</td><td>접수 후 48시간</td><td>영업일 기준 2일</td><td>CS</td></tr>
+      <tr id="d-04"><td class="id">D-04</td><td>부분취소를 못 하는 결제수단이 있는지</td><td>PG사 계약서 확인 후 해당 수단은 결제 화면에서 제외</td><td>전체취소 후 수수료만 다시 결제(고객 동의 필요해 비추천)</td><td>개발·PG</td></tr>
+      <tr id="d-05"><td class="id">D-05</td><td>수수료율·구간 숫자</td><td>이 문서의 예시 값(0·30·50·100%)</td><td>운영 데이터(취소 시점 분포) 보고 조정</td><td>사업</td></tr>
+      <tr id="d-06"><td class="id">D-06</td><td>취소 보상을 받은 시간에 새 예약이 들어오면 보상을 줄일지</td><td>줄이지 않음(계산 단순, 코치 신뢰). 3시간 미만 취소 시간은 최소 예약 시각(6시간 전) 때문에 어차피 다시 팔리지 않음</td><td>새 예약이 성사되면 보상 50% 차감</td><td>사업·정산</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ================= 11 ================= -->
+<section class="sec" id="s11">
+  <h2><span class="no">11</span>변경 이력과 개발 질의 응답</h2>
+  <p class="sub">질의 응답으로 정책이 바뀌면 변경 이력에 버전을 올리고, 화면에 '변경' 표시를 남겨요. (날짜와 내용은 예시예요.)</p>
+
+  <h3>변경 이력</h3>
+  <div class="tw"><table class="t-mid">
+    <thead><tr><th>버전</th><th>날짜</th><th>바뀐 곳</th><th>내용</th></tr></thead>
+    <tbody>
+      <tr><td class="nw">v1.0</td><td class="nw num">2026-09-01</td><td>전체</td><td>기존 예약·결제 화면설계 (기존 문서)</td></tr>
+      <tr><td class="nw">v1.1</td><td class="nw num">2026-10-15</td><td>P-02</td><td>취소 수수료 구간 3단계 → 4단계, 결제 직후 철회(R3) 추가</td></tr>
+      <tr><td class="nw">v1.2</td><td class="nw num">2026-10-22</td><td>P-05, P-07, P-08, 상태 전이</td><td>쿠폰 복원·대체 발급, 노쇼검토·분쟁검토 상태, 정산 보류·차감, APP-BK-021·APP-NS-010·ADM-DS-210 신규</td></tr>
+      <tr><td class="nw">v1.2.1</td><td class="nw num">2026-10-26</td><td>P-01, P-02, ADM-BK-110</td><td>Q-01~Q-04 반영: 경계 시각 정의, R3에 '24시간 이상' 조건, 기준 시각 미래 불가</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>개발 질의 응답 (QA 로그)</h3>
+  <div class="tw"><table class="t-wide">
+    <thead><tr><th>ID</th><th>날짜</th><th>질문한 분</th><th>질문</th><th>답변</th><th>상태</th></tr></thead>
+    <tbody>
+      <tr id="q-01"><td class="id">Q-01</td><td class="nw num">10/23</td><td class="nw">서버</td><td>72시간 경계는 분 단위인가요, 초 단위인가요?</td><td>초 단위. 남은 시간이 259,200초 이상이면 0%. P-02 아래에 명시했어요.</td><td><span class="chip c-ok">반영</span></td></tr>
+      <tr id="q-02"><td class="id">Q-02</td><td class="nw num">10/23</td><td class="nw">iOS</td><td>금액 변경 팝업에서 다시 확정할 때도 재계산하나요?</td><td>네. 새 견적 ID로 보내고, 그 사이 또 바뀌면 팝업을 다시 띄워요. APP-BK-021 ④에 적었어요.</td><td><span class="chip c-ok">반영</span></td></tr>
+      <tr id="q-03"><td class="id">Q-03</td><td class="nw num">10/24</td><td class="nw">QA</td><td>코치가 바로 수락한 예약을 결제 20분 뒤(수업 시작 10시간 전)에 취소하면 R3(결제 직후 철회)인가요?</td><td>아니에요. 아직 수락대기였다면 R2로 전액이지만, 이미 예약확정이고 수업까지 24시간 미만이라 R3도 아니에요. 구간표(50%)를 적용해요.</td><td><span class="chip c-ok">반영</span></td></tr>
+      <tr id="q-04"><td class="id">Q-04</td><td class="nw num">10/24</td><td class="nw">관리자 웹</td><td>강제 취소 기준 시각을 미래로 넣을 수 있나요?</td><td>안 돼요. 예약 생성 시각 ~ 현재만 고를 수 있어요.</td><td><span class="chip c-ok">반영</span></td></tr>
+      <tr id="q-05"><td class="id">Q-05</td><td class="nw num">10/26</td><td class="nw">디자인</td><td>쿠폰 소멸 안내를 빨간색으로 할까요?</td><td>경고가 아니라 안내라서 회색 점선 상자로 해 주세요. 빨강은 오류에만 써요.</td><td><span class="chip c-info">디자인 확인 중</span></td></tr>
+    </tbody>
+  </table></div>
+  <p class="scroll-hint">표는 옆으로 밀어서 볼 수 있어요.</p>
+</section>
+</main>
+
+<footer class="foot">
+  <p>제안용 기획 샘플 · 예시. 실제 서비스·회사와 관계없는 가상 문서예요.</p>
+  <a class="back" href="#top" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">목차로 올라가기</a>
+</footer>
+</div>
+</body>
+</html>
